@@ -1,62 +1,96 @@
-import { Barcode, Edit3, Minus, Plus, Trash2, X } from 'lucide-react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Edit3, Minus, Plus, Trash2, X } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Image, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// ... import icons lainnya tetap sama
 
-const ProductDetailModal = ({ visible, onClose, product } : any) => {
+const ProductDetailModal = () => {
   const insets = useSafeAreaInsets();
-  const [tempStock, setTempStock] = useState(product?.stock || 0);
+  const params: any = useLocalSearchParams();
+  
+  // States
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempStock, setTempStock] = useState(Number(params.stock) || 0);
+  const [editData, setEditData] = useState({
+    name: params.name,
+    price: params.price.toString(),
+    category: params.category
+  });
 
-  if (!product) return null;
-
-  // Hitung Margin Keuntungan
-  const margin = product.sellingPrice - product.costPrice;
-  const marginPercentage = ((margin / product.costPrice) * 100).toFixed(1);
+  const handleSave = () => {
+    // Gabungkan data stok dan data form
+    const finalData = { ...editData, stock: tempStock };
+    console.log("Saving data:", finalData);
+    
+    // Setelah save, matikan mode edit
+    setIsEditing(false);
+    // Tambahkan logic API di sini jika perlu
+  };
 
   return (
-    <Modal animationType="slide" visible={visible} transparent={true}>
+    <Modal animationType="slide" transparent={true}>
       <View className="flex-1 bg-black/50 justify-end">
         <View 
           className="bg-white rounded-t-[40px]" 
           style={{ paddingBottom: insets.bottom + 20, paddingTop: 20 }}
         >
-          {/* Header Modal */}
+          {/* Header */}
           <View className="flex-row justify-between items-center px-8 mb-6">
-            <Text className="text-xl font-black text-gray-900">Detail Produk</Text>
-            <TouchableOpacity onPress={onClose} className="bg-gray-100 p-2 rounded-full">
+            <Text className="text-xl font-black text-gray-900">
+              {isEditing ? "Edit Produk" : "Detail Produk"}
+            </Text>
+            <TouchableOpacity onPress={() => isEditing ? setIsEditing(false) : router.back()} className="bg-gray-100 p-2 rounded-full">
               <X size={20} color="#374151" />
             </TouchableOpacity>
           </View>
 
           <ScrollView className="px-8" showsVerticalScrollIndicator={false}>
-            {/* Bagian Atas: Gambar & Nama */}
-            <View className="flex-row items-center mb-8">
-              <Image source={{ uri: product.image }} className="w-24 h-24 rounded-[24px] bg-gray-100" />
-              <View className="ml-5 flex-1">
-                <View className="bg-lime-100 self-start px-3 py-1 rounded-full mb-1">
-                  <Text className="text-[10px] font-bold text-lime-700 uppercase">{product.category}</Text>
+            {isEditing ? (
+              /* --- TAMPILAN FORM EDIT --- */
+              <View className="gap-y-4">
+                <View>
+                  <Text className="text-gray-500 mb-2 font-bold">Nama Produk</Text>
+                  <TextInput 
+                    className="bg-gray-50 p-4 rounded-2xl border border-gray-200 text-gray-800"
+                    value={editData.name}
+                    onChangeText={(txt) => setEditData({...editData, name: txt})}
+                  />
                 </View>
-                <Text className="text-2xl font-bold text-gray-800 leading-7">{product.name}</Text>
-                <Text className="text-gray-400 text-sm mt-1 flex-row items-center">
-                  <Barcode size={14} color="#9CA3AF" /> {product.sku || 'No SKU'}
-                </Text>
+                <View>
+                  <Text className="text-gray-500 mb-2 font-bold">Harga Jual (Rp)</Text>
+                  <TextInput 
+                    className="bg-gray-50 p-4 rounded-2xl border border-gray-200 text-gray-800"
+                    keyboardType="numeric"
+                    value={editData.price}
+                    onChangeText={(txt) => setEditData({...editData, price: txt})}
+                  />
+                </View>
+                {/* Kamu bisa tambah input kategori di sini */}
               </View>
-            </View>
-
-            {/* Insight Keuntungan (Fitur Menjual) */}
-            <View className="bg-gray-50 p-5 rounded-[24px] mb-8 border border-gray-100 flex-row justify-between">
+            ) : (
+              /* --- TAMPILAN DETAIL (LAMA) --- */
               <View>
-                <Text className="text-gray-400 text-xs font-bold uppercase tracking-widest">Harga Beli</Text>
-                <Text className="text-lg font-bold text-gray-800">Rp {product.costPrice.toLocaleString()}</Text>
-              </View>
-              <View className="items-end">
-                <Text className="text-lime-600 text-xs font-bold uppercase tracking-widest">Estimasi Laba</Text>
-                <Text className="text-lg font-bold text-lime-600">+Rp {margin.toLocaleString()} ({marginPercentage}%)</Text>
-              </View>
-            </View>
+                <View className="flex-row items-center mb-8">
+                  <View className="flex-1">
+                    <View className="bg-lime-100 self-start px-3 py-1 rounded-full mb-1">
+                      <Text className="text-[10px] font-bold text-lime-700 uppercase">{params.category}</Text>
+                    </View>
+                    <Text className="text-2xl font-bold text-gray-800">{params.name}</Text>
+                  </View>
+                </View>
 
-            {/* Manajemen Stok Cepat */}
-            <Text className="text-gray-900 font-bold mb-4 text-lg">Manajemen Stok</Text>
+                <View className="bg-gray-50 p-5 rounded-[24px] mb-8 border border-gray-100 flex-row justify-between">
+                  <View>
+                    <Text className="text-gray-400 text-xs font-bold uppercase">Harga Jual</Text>
+                    <Text className="text-lg font-bold text-gray-800">Rp {Number(editData.price).toLocaleString()}</Text>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {/* Manajemen Stok (Muncul di dua mode agar fleksibel) */}
+            <Text className="text-gray-900 font-bold mt-4 mb-4 text-lg">Manajemen Stok</Text>
             <View className="flex-row items-center justify-between bg-white border border-gray-100 p-4 rounded-[24px] shadow-sm mb-8">
               <TouchableOpacity 
                 onPress={() => setTempStock(Math.max(0, tempStock - 1))}
@@ -64,30 +98,39 @@ const ProductDetailModal = ({ visible, onClose, product } : any) => {
               >
                 <Minus size={24} color="#374151" />
               </TouchableOpacity>
-              
               <View className="items-center">
                 <Text className="text-3xl font-black text-gray-900">{tempStock}</Text>
-                <Text className="text-gray-400 text-xs font-bold">Stok Saat Ini</Text>
+                <Text className="text-gray-400 text-xs font-bold">Stok</Text>
               </View>
-
               <TouchableOpacity 
                 onPress={() => setTempStock(tempStock + 1)}
-                className="bg-lime-400 w-12 h-12 rounded-2xl items-center justify-center shadow-md shadow-lime-400/40"
+                className="bg-lime-400 w-12 h-12 rounded-2xl items-center justify-center"
               >
                 <Plus size={24} color="white" />
               </TouchableOpacity>
             </View>
 
-            {/* Tombol Aksi */}
-            <View className="flex-row gap-4 mb-4">
-              <TouchableOpacity className="flex-1 bg-gray-900 h-16 rounded-[24px] flex-row items-center justify-center">
-                <Edit3 size={20} color="white" />
-                <Text className="text-white font-bold ml-2 text-base">Edit Produk</Text>
+            {/* Tombol Aksi Dinamis */}
+            <View className="flex-row gap-4">
+              <TouchableOpacity 
+                onPress={() => isEditing ? handleSave() : setIsEditing(true)}
+                className="flex-1 bg-gray-900 h-16 rounded-[24px] flex-row items-center justify-center"
+              >
+                {isEditing ? (
+                  <Text className="text-white font-bold text-base">Simpan Perubahan</Text>
+                ) : (
+                  <>
+                    <Edit3 size={20} color="white" />
+                    <Text className="text-white font-bold ml-2 text-base">Edit Produk</Text>
+                  </>
+                )}
               </TouchableOpacity>
               
-              <TouchableOpacity className="bg-red-50 w-16 h-16 rounded-[24px] items-center justify-center border border-red-100">
-                <Trash2 size={24} color="#EF4444" />
-              </TouchableOpacity>
+              {!isEditing && (
+                <TouchableOpacity className="bg-red-50 w-16 h-16 rounded-[24px] items-center justify-center border border-red-100">
+                  <Trash2 size={24} color="#EF4444" />
+                </TouchableOpacity>
+              )}
             </View>
           </ScrollView>
         </View>
@@ -96,4 +139,4 @@ const ProductDetailModal = ({ visible, onClose, product } : any) => {
   );
 };
 
-export default ProductDetailModal;
+export default ProductDetailModal

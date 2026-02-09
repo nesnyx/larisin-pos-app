@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { AlertCircle, Filter, MoreHorizontal, Package, Plus, Search } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import {
@@ -22,6 +23,7 @@ const INITIAL_PRODUCTS = [
 ];
 
 const InventoryScreen = () => {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
   const [products] = useState(INITIAL_PRODUCTS);
@@ -42,6 +44,11 @@ const InventoryScreen = () => {
         </View>
         <TouchableOpacity 
           activeOpacity={0.7}
+          onPress={()=>{
+            router.push({
+            pathname:"/product-create"
+          })
+          }}
           className="bg-lime-400 w-14 h-14 rounded-2xl items-center justify-center shadow-lg shadow-lime-400/40"
         >
           <Plus size={30} color="white" strokeWidth={3} />
@@ -77,6 +84,14 @@ const InventoryScreen = () => {
       <TouchableOpacity 
         activeOpacity={0.8}
         className="mx-6 mb-4 bg-white rounded-[28px] p-4 flex-row items-center border border-gray-50 shadow-sm shadow-gray-200"
+        onPress={()=>{
+          router.push({
+            pathname:"/product-detail",
+            params:{
+              ...item
+            }
+          })
+        }}
       >
         <View className="relative">
           <Image source={{ uri: item.image }} className="w-20 h-20 rounded-2xl bg-gray-100" />
