@@ -2,7 +2,7 @@ import { HapticTab } from '@/components/haptic-tab';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Tabs } from 'expo-router';
-import { ClipboardList, LayoutDashboardIcon, Package2 } from 'lucide-react-native';
+import { ClipboardList, History, LayoutDashboardIcon, Package2 } from 'lucide-react-native';
 import React from 'react';
 
 export default function TabLayout() {
@@ -34,6 +34,13 @@ export default function TabLayout() {
         options={{
           title: 'Transaction',
           tabBarIcon: ({ color }) => <ClipboardList size={28}  color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="history-transaction"
+        options={{
+          title: 'History Transaction',
+          tabBarIcon: ({ color }) => <History size={28}  color={color} />,
         }}
       />
     </Tabs>
