@@ -1,3 +1,4 @@
+import { useProductsStore } from '@/store/useProductsStore';
 import { CheckCircle2, ChevronRight, Minus, Plus, ShoppingBag, User, Wallet, X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -13,12 +14,7 @@ const TransactionPage = () => {
     const [customerName, setCustomerName] = useState('');
     const [cashAmount, setCashAmount] = useState('');
 
-    // Dummy Data
-    const products = [
-        { id: '1', name: 'Kopi Susu Gula Aren', price: 15000, stock: 20, category: 'Minuman' },
-        { id: '2', name: 'Roti Bakar Cokelat', price: 12000, stock: 15, category: 'Makanan' },
-        { id: '3', name: 'Es Teh Manis', price: 5000, stock: 50, category: 'Minuman' },
-    ];
+    const {items} = useProductsStore()
 
     const addToCart = (product:any) => {
         setCart((prev:any) => {
@@ -61,7 +57,7 @@ const TransactionPage = () => {
             </View>
 
             <FlatList 
-                data={products}
+                data={items}
                 numColumns={2}
                 contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
                 renderItem={({ item }) => (

@@ -1,6 +1,7 @@
-import { useRouter } from 'expo-router';
+import { useProductsStore } from '@/store/useProductsStore';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { AlertCircle, Filter, MoreHorizontal, Package, Plus, Search } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -14,33 +15,31 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// --- DATA DUMMY ---
-const INITIAL_PRODUCTS = [
-  { id: '1', name: 'Berry Cake', price: 12500, stock: 15, category: 'Bakery', image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400' },
-  { id: '2', name: 'Green Apple', price: 8000, stock: 4, category: 'Fruit', image: 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=400' },
-  { id: '3', name: 'Black Tea', price: 5000, stock: 0, category: 'Drink', image: 'https://images.unsplash.com/photo-1544787210-22bb830d596c?w=400' },
-  { id: '4', name: 'Almond Croissant', price: 22000, stock: 8, category: 'Bakery', image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400' },
-];
 
 const InventoryScreen = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
-  const [products] = useState(INITIAL_PRODUCTS);
+  const {items, fetchProduct} = useProductsStore()
+  const [loading, setLoading] = useState(true);
   
-  // Filter logika
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(search.toLowerCase())
+  useFocusEffect(
+    useCallback(() => {
+      fetchProduct();
+      return () => {};
+    }, []),
   );
 
-  // --- COMPONENT: HEADER (Memoized to prevent keyboard flicker) ---
+
+  
+
   const ListHeader = useMemo(() => (
     <View className="px-6 pb-4 bg-gray-50">
       {/* Top Bar */}
       <View className="flex-row justify-between items-center py-6">
         <View>
           <Text className="text-3xl font-black text-gray-900 tracking-tight">Inventori</Text>
-          <Text className="text-gray-500 font-medium">{products.length} Produk Terdaftar</Text>
+          <Text className="text-gray-500 font-medium">{items.length} Produk Terdaftar</Text>
         </View>
         <TouchableOpacity 
           activeOpacity={0.7}
@@ -73,7 +72,7 @@ const InventoryScreen = () => {
         </TouchableOpacity>
       </View>
     </View>
-  ), [search, products.length]);
+  ), [search, items.length]);
 
   // --- COMPONENT: ITEM CARD ---
   const renderProductItem = ({ item } : any) => {
@@ -141,9 +140,9 @@ const InventoryScreen = () => {
         className="flex-1"
       >
         <FlatList
-          data={filteredProducts}
+          data={items}
           renderItem={renderProductItem}
-          keyExtractor={item => item.id}
+          keyExtractor={(item:any) => item.id}
           ListHeaderComponent={ListHeader}
           // Agar ListHeader (termasuk search bar) berhenti tepat di bawah notch
           contentContainerStyle={{ 
