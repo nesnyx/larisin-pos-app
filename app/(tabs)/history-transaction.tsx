@@ -1,8 +1,9 @@
 import { useTransactionStore } from '@/store/useTransaction';
 import { ArrowUpRight, Calendar, ChevronRight, ReceiptText, Search } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 const HistoryTransaction = () => {
     const insets = useSafeAreaInsets();
     const [search, setSearch] = useState('');
@@ -11,29 +12,34 @@ const HistoryTransaction = () => {
 
     useEffect(() => {
         let filterParam = "today";
-
         if (selectedFilter === "Minggu Ini") filterParam = "week";
         if (selectedFilter === "Bulan Ini") filterParam = "month";
 
         fetchHistories(filterParam);
     }, [selectedFilter]);
 
-    // --- LOGIC SEARCH DENGAN USEMEMO ---
+    // --- LOGIC SEARCH YANG AMAN ---
     const filteredHistory = useMemo(() => {
-        if (!search.trim()) return histories;
+        // Pastikan histories adalah array sebelum diproses
+        const data = Array.isArray(histories) ? histories : [];
+        
+        if (!search.trim()) return data;
 
-        return histories.filter((item) => {
-            const searchLower = search.toLowerCase();
-            return (
-                item.customerName.toLowerCase().includes(searchLower) ||
-                item.invoice.toLowerCase().includes(searchLower)
-            );
+        const searchLower = search.toLowerCase();
+        
+        return data.filter((item) => {
+            // Gunakan optional chaining (?.) dan fallback string kosong ('')
+            // Ini mencegah error "toLowerCase of undefined"
+            const name = item?.customerName?.toLowerCase() ?? '';
+            const inv = item?.invoice?.toLowerCase() ?? '';
+            
+            return name.includes(searchLower) || inv.includes(searchLower);
         });
     }, [search, histories]);
 
     const totalOmzet = useMemo(() => {
         return filteredHistory.reduce(
-            (sum, item) => sum + item.totalPrice,
+            (sum, item) => sum + (Number(item?.totalPrice) || 0),
             0
         );
     }, [filteredHistory]);
@@ -51,7 +57,7 @@ const HistoryTransaction = () => {
                 </TouchableOpacity>
             </View>
 
-            {/* Statistik Singkat - Dinamis sesuai hasil search */}
+            {/* Statistik Omzet */}
             <View className="px-6 mb-6">
                 <View className="bg-lime-400 p-6 rounded-[32px] flex-row justify-between items-center shadow-xl shadow-lime-200">
                     <View>
@@ -59,7 +65,7 @@ const HistoryTransaction = () => {
                             Omzet {search ? '(Hasil Cari)' : `(${selectedFilter})`}
                         </Text>
                         <Text className="text-white text-3xl font-black mt-1">
-                            Rp {totalOmzet.toLocaleString()}
+                            Rp {totalOmzet.toLocaleString('id-ID')}
                         </Text>
                     </View>
                     <View className="bg-white/20 p-3 rounded-2xl">
@@ -70,37 +76,36 @@ const HistoryTransaction = () => {
 
             {/* Search Bar */}
             <View className="px-6 mb-4">
-                <View className="flex-row items-center bg-gray-50 rounded-2xl px-4 py-3 border border-gray-100 mb-4">
+                <View className="flex-row items-center bg-gray-50 rounded-2xl px-4 py-3 border border-gray-100">
                     <Search size={20} color="#9CA3AF" />
                     <TextInput
                         placeholder="Cari Nama atau Invoice..."
                         className="flex-1 ml-3 font-medium text-gray-700"
                         value={search}
                         onChangeText={setSearch}
-                        clearButtonMode="while-editing" // Khusus iOS biar ada tombol (x)
+                        clearButtonMode="while-editing"
+                        autoCorrect={false} // Best practice untuk search bar
                     />
                 </View>
-
-                {/* Filter Chips */}
-                {/* <View className="flex-row">
-                    {filters.map((f) => (
-                        <TouchableOpacity
-                            key={f}
-                            onPress={() => setSelectedFilter(f)}
-                            className={`mr-2 px-5 py-2.5 rounded-full ${selectedFilter === f ? 'bg-gray-900' : 'bg-gray-100'}`}
-                        >
-                            <Text className={`font-bold text-xs ${selectedFilter === f ? 'text-white' : 'text-gray-500'}`}>{f}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View> */}
             </View>
 
             {/* List Transaksi */}
             <FlatList
                 data={filteredHistory}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item?.id?.toString() ?? Math.random().toString()}
+                contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
+                // Tambahkan Loading State agar UX lebih bagus
+                ListEmptyComponent={() => (
+                    <View className="items-center mt-10">
+                        {isLoading ? (
+                            <ActivityIndicator color="#A3E635" />
+                        ) : (
+                            <Text className="text-gray-400 font-bold">Tidak ada transaksi</Text>
+                        )}
+                    </View>
+                )}
                 renderItem={({ item }) => {
-                    const date = new Date(item.createdAt);
+                    const date = item?.createdAt ? new Date(item.createdAt) : new Date();
                     const time = date.toLocaleTimeString("id-ID", {
                         hour: "2-digit",
                         minute: "2-digit"
@@ -117,22 +122,22 @@ const HistoryTransaction = () => {
 
                             <View className="flex-1">
                                 <View className="flex-row justify-between items-start">
-                                    <View>
+                                    <View className="flex-1 mr-2">
                                         <Text className="text-[10px] font-bold text-gray-400 uppercase">
-                                            {item.invoice}
+                                            {item?.invoice ?? 'No Invoice'}
                                         </Text>
-                                        <Text className="font-bold text-gray-800 text-base">
-                                            {item.customerName}
+                                        <Text className="font-bold text-gray-800 text-base" numberOfLines={1}>
+                                            {item?.customerName ?? 'Guest'}
                                         </Text>
                                     </View>
                                     <Text className="font-black text-gray-900 text-sm">
-                                        Rp {item.totalPrice.toLocaleString()}
+                                        Rp {(item?.totalPrice ?? 0).toLocaleString('id-ID')}
                                     </Text>
                                 </View>
 
                                 <View className="flex-row justify-between items-center mt-2">
                                     <Text className="text-gray-400 text-xs font-medium">
-                                        {item.totalItem} Produk • {time}
+                                        {item?.totalItem ?? 0} Produk • {time}
                                     </Text>
                                     <ChevronRight size={16} color="#9CA3AF" />
                                 </View>
