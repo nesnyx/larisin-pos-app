@@ -31,7 +31,6 @@ const InventoryScreen = () => {
   );
 
 
-  
 
   const ListHeader = useMemo(() => (
     <View className="px-6 pb-4 bg-gray-50">

@@ -13,7 +13,7 @@ interface Product {
 interface ProductStore {
     items: Product[];
     isLoading: boolean;
-    fetchProduct: () => Promise<void>;
+    fetchProduct: (limit?: number) => Promise<void>;
     addProduct: (
         name: string,
         price: number,
@@ -28,10 +28,16 @@ interface ProductStore {
 export const useProductsStore = create<ProductStore>((set, get) => ({
     items: [],
     isLoading: true,
-    fetchProduct: async () => {
+    fetchProduct: async (limit?: number) => {
         if (get().items.length === 0) set({ isLoading: true });
         try {
-            const response = await api.get(ENDPOINTS.PRODUCTS.LIST);
+            let response
+            if (!limit) {
+                response = await api.get(ENDPOINTS.PRODUCTS.LIST);
+            } else {
+                response = await api.get(`${ENDPOINTS.PRODUCTS.LIST}?limit=${limit}`);
+            }
+            
             const newData = response.data.data;
             if (JSON.stringify(newData) !== JSON.stringify(get().items)) {
                 set({ items: newData });

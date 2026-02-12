@@ -9,5 +9,9 @@ export const ENDPOINTS = {
         LOGIN: "/auth/login",
         REGISTER: "/auth/register",
         PROFILE: "/auth/profile",
+    },
+    TRANSACTIONS:{
+        LIST: "/transactions",
+        CHECKOUT: "/transactions",
     }
 }
