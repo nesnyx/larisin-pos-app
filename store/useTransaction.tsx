@@ -20,7 +20,7 @@ interface CheckoutItem {
 
 interface TransactionStore {
     histories: TransactionHistory[];
-    fetchHistories: (filter?: string) => Promise<void>;
+    fetchHistories: (period?:string) => Promise<void>;
     isLoading: boolean;
     totalTransactions: number;
     totalRevenuePerDay: number
@@ -39,21 +39,24 @@ export const useTransactionStore = create<TransactionStore>((set) => ({
     totalTransactions: 0,
     histories: [],
 
-    fetchHistories: async (filter?: string) => {
-        try {
-            set({ isLoading: true });
+    fetchHistories: async (period?: string) => {
+    try {
+        set({ isLoading: true });
 
-            const response = await api.get(
-                `${ENDPOINTS.TRANSACTIONS.LIST}`
-            );
+        const response = await api.get(
+            `${ENDPOINTS.TRANSACTIONS.LIST}`,
+            {
+                params: { period }
+            }
+        );
 
-            set({ histories: response.data.data });
-        } catch (error) {
-            console.log("Fetch History Error:", error);
-        } finally {
-            set({ isLoading: false });
-        }
-    },
+        set({ histories: response.data.data });
+    } catch (error) {
+        console.log("Fetch History Error:", error);
+    } finally {
+        set({ isLoading: false });
+    }
+},
 
     checkout: async (items, charge, customerName) => {
         try {

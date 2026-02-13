@@ -1,8 +1,9 @@
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCheckInternet } from '@/hooks/useCheckInternet'; // Import hook
+import useAuthStore from '@/store/useAuthStore';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { WifiOff } from 'lucide-react-native';
+import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
@@ -11,6 +12,7 @@ import "../global.css";
 export const unstable_settings = {
   initialRouteName: 'auth',
 };
+
 
 // Komponen Banner Offline
 function OfflineBanner() {
@@ -33,19 +35,27 @@ function OfflineBanner() {
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { isLoggedIn, hydrateAuth, loading } = useAuthStore();
 
+  useEffect(() => {
+    hydrateAuth();
+  }, []);
+
+
+  if (loading) {
+    return null; 
+  }
   return (
     <GestureHandlerRootView >
       <SafeAreaProvider>
         <OfflineBanner />
-
         <Stack>
           <Stack.Screen name="auth" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="product-detail" options={{ headerShown: false, presentation: 'transparentModal' }} />
-          <Stack.Screen name="product-create" options={{ headerShown: false, presentation: 'transparentModal' }} />
+          <Stack.Protected guard={isLoggedIn}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="product-detail" options={{ headerShown: false, presentation: 'transparentModal' }} />
+            <Stack.Screen name="product-create" options={{ headerShown: false, presentation: 'transparentModal' }} />
+          </Stack.Protected>
         </Stack>
         <StatusBar style="auto" />
       </SafeAreaProvider>

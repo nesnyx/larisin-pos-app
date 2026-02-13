@@ -1,35 +1,42 @@
 import { useTransactionStore } from '@/store/useTransaction';
+import { useFocusEffect } from 'expo-router';
 import { ArrowUpRight, Calendar, ChevronRight, ReceiptText, Search } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+
+type FilterType = 'Hari Ini' | 'Minggu Ini' | 'Bulan Ini';
+const filterMap: Record<FilterType, 'daily' | 'weekly' | 'monthly'> = {
+    'Hari Ini': 'daily',
+    'Minggu Ini': 'weekly',
+    'Bulan Ini': 'monthly'
+};
 const HistoryTransaction = () => {
     const insets = useSafeAreaInsets();
     const [search, setSearch] = useState('');
-    const [selectedFilter, setSelectedFilter] = useState('Hari Ini');
+    const [selectedFilter, setSelectedFilter] = useState<FilterType>('Hari Ini');
     const { histories, fetchHistories, isLoading } = useTransactionStore();
 
-    useEffect(() => {
-        let filterParam = "today";
-        if (selectedFilter === "Minggu Ini") filterParam = "week";
-        if (selectedFilter === "Bulan Ini") filterParam = "month";
+    useFocusEffect(
+        useCallback(() => {
+            const period = filterMap[selectedFilter];
+            fetchHistories(period);
+            return () => { };
+        }, [selectedFilter]),
+    );
 
-        fetchHistories(filterParam);
-    }, [selectedFilter]);
-
-    // --- LOGIC SEARCH YANG AMAN ---
     const filteredHistory = useMemo(() => {
         const data = Array.isArray(histories) ? histories : [];
-        
+
         if (!search.trim()) return data;
 
         const searchLower = search.toLowerCase();
-        
+
         return data.filter((item) => {
             const name = item?.customerName?.toLowerCase() ?? '';
             const inv = item?.invoice?.toLowerCase() ?? '';
-            
+
             return name.includes(searchLower) || inv.includes(searchLower);
         });
     }, [search, histories]);
@@ -52,7 +59,9 @@ const HistoryTransaction = () => {
                 <TouchableOpacity className="bg-gray-100 p-3 rounded-2xl">
                     <Calendar size={24} color="#111827" />
                 </TouchableOpacity>
+
             </View>
+
 
             {/* Statistik Omzet */}
             <View className="px-6 mb-6">
@@ -69,8 +78,29 @@ const HistoryTransaction = () => {
                         <ArrowUpRight size={28} color="white" />
                     </View>
                 </View>
-            </View>
 
+            </View>
+            <View className='px-6 mb-4 flex-row justify-between'>
+                {['Hari Ini', 'Minggu Ini', 'Bulan Ini'].map((item: any) => (
+                    <TouchableOpacity
+                        key={item}
+                        onPress={() => setSelectedFilter(item)}
+                        className={`px-4 py-2 rounded-2xl ${selectedFilter === item
+                            ? 'bg-gray-900'
+                            : 'bg-gray-100'
+                            }`}
+                    >
+                        <Text
+                            className={`font-bold text-xs ${selectedFilter === item
+                                ? 'text-white'
+                                : 'text-gray-600'
+                                }`}
+                        >
+                            {item}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
             {/* Search Bar */}
             <View className="px-6 mb-4">
                 <View className="flex-row items-center bg-gray-50 rounded-2xl px-4 py-3 border border-gray-100">

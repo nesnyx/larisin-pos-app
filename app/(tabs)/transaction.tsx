@@ -1,3 +1,4 @@
+import CustomAlert from '@/components/custom-alert';
 import { useProductsStore } from '@/store/useProductsStore';
 import { useTransactionStore } from '@/store/useTransaction';
 import { ChevronRight, Minus, Plus, ShoppingBag, User, Wallet, X } from 'lucide-react-native';
@@ -11,13 +12,26 @@ const TransactionPage = () => {
     const [isCartVisible, setIsCartVisible] = useState(false);
     const [isCheckoutVisible, setIsCheckoutVisible] = useState(false);
     const { checkout, isLoading } = useTransactionStore();
-
+    const [alertConfig, setAlertConfig] = useState({
+        visible: false,
+        type: 'info' as 'success' | 'error' | 'info',
+        title: '',
+        message: ''
+    });
+    const notify = (title: string, msg: string, type: 'success' | 'error' | 'info' = 'error') => {
+        setAlertConfig({
+            visible: true,
+            title,
+            message: msg,
+            type
+        });
+    };
     // Form States
     const [customerName, setCustomerName] = useState('');
     const [cashAmount, setCashAmount] = useState('');
 
-    const { items } = useProductsStore()
-
+    const items = useProductsStore(state => state.items)
+    const fetchHistories = useTransactionStore(state => state.fetchHistories)
     const addToCart = (product: any) => {
         setCart((prev: any) => {
             const existing = prev.find((item: any) => item.id === product.id);
@@ -46,20 +60,16 @@ const TransactionPage = () => {
             }));
 
             await checkout(payloadItems, Number(cashAmount), customerName);
+            notify("Berhasil!", `Transaksi atas nama ${customerName}`, 'success');
 
-            alert(
-                `Transaksi Berhasil!\nCustomer: ${customerName}\nKembalian: Rp ${changeAmount.toLocaleString()}`
-            );
-
-            // Reset
             setCart([]);
             setCustomerName('');
             setCashAmount('');
             setIsCheckoutVisible(false);
             setIsCartVisible(false);
-
+            fetchHistories()
         } catch (error) {
-            alert("Transaksi gagal!");
+            notify("Error!", `Terjadi Kesalahan`, 'error');
         }
     };
 
@@ -211,6 +221,13 @@ const TransactionPage = () => {
                     </View>
                 </KeyboardAvoidingView>
             </Modal>
+            <CustomAlert
+                visible={alertConfig.visible}
+                type={alertConfig.type}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                onClose={() => setAlertConfig({ ...alertConfig, visible: false })}
+            />
         </View>
     );
 };

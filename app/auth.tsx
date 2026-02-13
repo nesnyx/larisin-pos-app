@@ -1,3 +1,4 @@
+import CustomAlert from '@/components/custom-alert';
 import { ENDPOINTS } from '@/constants/endpoints';
 import useUserStore from '@/store/useAuthStore';
 import api from '@/utils/api';
@@ -7,7 +8,6 @@ import { ArrowRight, Eye, EyeOff, Lock, Mail, ShieldCheck, User } from 'lucide-r
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
-    Alert,
     ScrollView,
     Text,
     TextInput,
@@ -19,12 +19,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const AuthPage = () => {
     const insets = useSafeAreaInsets();
     const router = useRouter();
-    const fetchProfile = useUserStore((state) => state.fetchProfile);
 
     const [isLogin, setIsLogin] = useState(true);
     const [secureText, setSecureText] = useState(true);
     const [loading, setLoading] = useState(false);
-
+    const [alertConfig, setAlertConfig] = useState({
+        visible: false,
+        type: 'info' as 'success' | 'error' | 'info',
+        title: '',
+        message: ''
+    });
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -32,9 +36,13 @@ const AuthPage = () => {
         name: ''
     });
 
-    // Helper untuk Alert agar seragam
-    const notify = (title: string, msg: string) => {
-        Alert.alert(title, msg, [{ text: "Siap!" }]);
+    const notify = (title: string, msg: string, type: 'success' | 'error' | 'info' = 'error') => {
+        setAlertConfig({
+            visible: true,
+            title,
+            message: msg,
+            type
+        });
     };
 
     const handleAuth = async () => {
@@ -48,11 +56,9 @@ const AuthPage = () => {
         setLoading(true);
         try {
             if (isLogin) {
-                // LOGIC LOGIN
                 const response = await api.post(ENDPOINTS.AUTH.LOGIN, {
                     email: formData.email.toLowerCase().trim(),
                     password: formData.password,
-
                 });
 
                 if (response.data.data.token) {
@@ -71,7 +77,7 @@ const AuthPage = () => {
                 setFormData({ ...formData, password: '', confirmPassword: '' });
             }
         } catch (error: any) {
-            const msg = error.response?.data?.message || "Terjadi kesalahan sistem.";
+            const msg = error.response?.data?.message || "Invalid Credentials";
             notify(isLogin ? "Login Gagal" : "Gagal Daftar", Array.isArray(msg) ? msg[0] : msg);
         } finally {
             setLoading(false);
@@ -82,7 +88,7 @@ const AuthPage = () => {
         <KeyboardAwareScrollView
             contentContainerStyle={{ flexGrow: 1 }}
             enableOnAndroid={true}
-            extraScrollHeight={20} 
+            extraScrollHeight={20}
         >
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}
                 keyboardShouldPersistTaps="handled"
@@ -177,6 +183,13 @@ const AuthPage = () => {
                             {isLogin ? 'Daftar' : 'Masuk'}
                         </Text>
                     </TouchableOpacity>
+                    <CustomAlert
+                        visible={alertConfig.visible}
+                        type={alertConfig.type}
+                        title={alertConfig.title}
+                        message={alertConfig.message}
+                        onClose={() => setAlertConfig({ ...alertConfig, visible: false })}
+                    />
                 </View>
             </ScrollView>
         </KeyboardAwareScrollView>

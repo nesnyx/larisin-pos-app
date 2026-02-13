@@ -10,16 +10,17 @@ interface UserProfile {
 }
 
 interface UserState {
-  profile: UserProfile | null;
-  isLoggedIn: boolean;
-  loading: boolean;
-  setIsLoggedIn: (status: boolean) => void;
-  setToken: (token: string) => Promise<void>;
-  fetchProfile: () => Promise<void>;
-  clearProfile: () => void;
+    profile: UserProfile | null;
+    isLoggedIn: boolean;
+    loading: boolean;
+    setIsLoggedIn: (status: boolean) => void;
+    setToken: (token: string) => Promise<void>;
+    fetchProfile: () => Promise<void>;
+    clearProfile: () => void;
+    hydrateAuth: () => void
 }
 
-export const useUserStore = create<UserState>((set) => ({
+export const useUserStore = create<UserState>((set,get) => ({
     profile: null,
     isLoggedIn: false,
     loading: false,
@@ -33,11 +34,26 @@ export const useUserStore = create<UserState>((set) => ({
             const response = await api.get(ENDPOINTS.AUTH.PROFILE);
             set({ profile: response.data.data, isLoggedIn: true });
         } catch (error) {
+            await SecureStore.deleteItemAsync("userToken");
             set({ isLoggedIn: false });
         }
     },
     setIsLoggedIn: (status: boolean) => set({ isLoggedIn: status }),
     clearProfile: () => set({ profile: null, isLoggedIn: false }),
+    hydrateAuth: async () => {
+        set({ loading: true });
+        const token = await SecureStore.getItemAsync("userToken");
+        if (token) {
+            try {
+                set({ isLoggedIn: true });
+                await get().fetchProfile();
+            } catch {
+                set({ isLoggedIn: false });
+            }
+        }
+
+        set({ loading: false });
+    }
 }));
 
 
