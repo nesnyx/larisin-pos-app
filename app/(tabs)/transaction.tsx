@@ -84,6 +84,12 @@ const TransactionPage = () => {
                         <Text className="font-black text-lime-600 text-sm">Rp {item.price.toLocaleString()}</Text>
                     </TouchableOpacity>
                 )}
+                ListEmptyComponent={() => (
+                    <View className="items-center justify-center mt-20">
+                        <ShoppingBag size={32} color="#E5E7EB" />
+                        <Text className="text-gray-400 mt-4 font-semibold text-lg">Produk Kosong</Text>
+                    </View>
+                )}
             />
 
             {/* Floating Bar */}
@@ -105,16 +111,23 @@ const TransactionPage = () => {
                             <TouchableOpacity onPress={() => setIsCartVisible(false)}><X size={24} color="#000" /></TouchableOpacity>
                         </View>
                         <ScrollView className="px-8">
-                            {cart.map((item: any) => (
-                                <View key={item.id} className="flex-row items-center mb-6">
-                                    <View className="flex-1"><Text className="font-bold text-gray-800">{item.name}</Text><Text className="text-gray-400 text-sm">Rp {item.price.toLocaleString()}</Text></View>
-                                    <View className="flex-row items-center bg-gray-100 rounded-2xl p-1">
-                                        <TouchableOpacity onPress={() => updateQty(item.id, -1)} className="bg-white p-2 rounded-xl"><Minus size={16} color="#374151" /></TouchableOpacity>
-                                        <Text className="mx-4 font-black text-gray-900">{item.qty}</Text>
-                                        <TouchableOpacity onPress={() => updateQty(item.id, 1)} className="bg-gray-900 p-2 rounded-xl"><Plus size={16} color="#fff" /></TouchableOpacity>
+                            {cart.length !== 0 ? (
+                                cart.map((item: any) => (
+                                    <View key={item.id} className="flex-row items-center mb-6">
+                                        <View className="flex-1"><Text className="font-bold text-gray-800">{item.name}</Text><Text className="text-gray-400 text-sm">Rp {item.price.toLocaleString()}</Text></View>
+                                        <View className="flex-row items-center bg-gray-100 rounded-2xl p-1">
+                                            <TouchableOpacity onPress={() => updateQty(item.id, -1)} className="bg-white p-2 rounded-xl"><Minus size={16} color="#374151" /></TouchableOpacity>
+                                            <Text className="mx-4 font-black text-gray-900">{item.qty}</Text>
+                                            <TouchableOpacity onPress={() => updateQty(item.id, 1)} className="bg-gray-900 p-2 rounded-xl"><Plus size={16} color="#fff" /></TouchableOpacity>
+                                        </View>
                                     </View>
+                                ))
+                            ) : (
+                                <View className="items-center justify-center mt-20">
+                                    <ShoppingBag size={32} color="#E5E7EB" />
+                                    <Text className="text-gray-400 mt-4 font-semibold text-lg">Keranjang Kosong</Text>
                                 </View>
-                            ))}
+                            )}
                         </ScrollView>
                         <View className="px-8 py-6 border-t border-gray-50" style={{ paddingBottom: insets.bottom + 20 }}>
                             {cart.length === 0 ? <TouchableOpacity onPress={() => setIsCartVisible(false)} className="bg-slate-400 h-16 rounded-[24px] items-center justify-center">

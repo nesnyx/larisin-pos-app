@@ -1,16 +1,21 @@
 import { useProductsStore } from '@/store/useProductsStore';
+import { useTransactionStore } from '@/store/useTransaction';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { LockIcon, Package, Plus, ShoppingBag, Users } from 'lucide-react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ProfileModal from '../profile';
 
 const DashboardUMKM = () => {
   const { items, fetchProduct } = useProductsStore()
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
+  const { totalTransactions, totalRevenuePerDay, totalTransactionAndRevenue } = useTransactionStore()
   const router = useRouter()
   useFocusEffect(
     useCallback(() => {
       fetchProduct(5);
+      totalTransactionAndRevenue()
       return () => { };
     }, []),
   );
@@ -24,16 +29,20 @@ const DashboardUMKM = () => {
               <Text className="text-gray-500 text-sm">Selamat Pagi,</Text>
               <Text className="text-2xl font-bold text-gray-900">Kedai  Kita </Text>
             </View>
-            <TouchableOpacity className="w-12 h-12 bg-white rounded-full items-center justify-center border border-gray-100 shadow-sm">
+            <TouchableOpacity onPress={() => setIsProfileVisible(true)} className="w-12 h-12 bg-white rounded-full items-center justify-center border border-gray-100 shadow-sm">
               <Users size={20} color="#111827" />
             </TouchableOpacity>
+            <ProfileModal
+              visible={isProfileVisible}
+              onClose={() => setIsProfileVisible(false)}
+            />
           </View>
 
           {/* Main Stats Card */}
           <View className="bg-lime-400 p-6 rounded-[32px] mb-8 shadow-xl shadow-lime-400/30">
             <Text className="text-lime-900 font-medium opacity-80">Total Penjualan Hari Ini</Text>
             <View className="flex-row items-end mt-1">
-              <Text className="text-4xl font-extrabold text-lime-950">Rp 2.450.000</Text>
+              <Text className="text-4xl font-extrabold text-lime-950">Rp {totalRevenuePerDay.toLocaleString('id-ID')}</Text>
             </View>
             {/* <View className="flex-row items-center mt-4 bg-lime-500/20 self-start px-3 py-1 rounded-full">
               <ArrowUpRight size={16} color="#064e3b" />
@@ -48,7 +57,7 @@ const DashboardUMKM = () => {
                 <ShoppingBag size={20} color="#3b82f6" />
               </View>
               <Text className="text-gray-500 text-xs">Transaksi</Text>
-              <Text className="text-xl font-bold">48</Text>
+              <Text className="text-xl font-bold">{totalTransactions}</Text>
             </View>
             <View className="bg-gray-300 p-5 rounded-[24px] w-[47%] border border-gray-100 shadow-sm">
               <View className="bg-gray-100 w-10 h-10 rounded-full items-center justify-center mb-3">
@@ -62,7 +71,11 @@ const DashboardUMKM = () => {
           {/* Quick Actions */}
           <Text className="text-lg font-bold text-gray-900 mb-4">Aksi Cepat</Text>
           <View className="flex-row gap-4 mb-8">
-            <TouchableOpacity className="flex-1 bg-white p-4 rounded-2xl border border-dashed border-gray-300 items-center">
+            <TouchableOpacity activeOpacity={0.7} onPress={() => {
+              router.push({
+                pathname: "/product-create"
+              })
+            }} className="flex-1 bg-white p-4 rounded-2xl border border-dashed border-gray-300 items-center">
               <Plus size={24} color="#6B7280" />
               <Text className="text-gray-600 mt-2 font-medium">Tambah Stok</Text>
             </TouchableOpacity>
@@ -81,12 +94,12 @@ const DashboardUMKM = () => {
           {items.length !== 0 ? (
             items.map((item: any, index) => (
               <View key={index} className="bg-white p-4 rounded-2xl mb-3 flex-row items-center border border-gray-50">
-                <View className="w-12 h-12 bg-gray-100 rounded-xl mr-4" />
+               
                 <View className="flex-1">
                   <Text className="font-bold text-gray-800">{item.name}</Text>
                   <Text className="text-gray-500 text-xs">{item.stock} Stock</Text>
                 </View>
-                <Text className="font-bold text-gray-900">Rp {index === 0 ? '18.000' : '25.000'}</Text>
+                <Text className="font-bold text-gray-900">Rp {item.price.toLocaleString()}</Text>
               </View>
             ))
           ) : (

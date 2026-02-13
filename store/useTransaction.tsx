@@ -8,7 +8,7 @@ export interface TransactionHistory {
     invoice: string;
     customerName: string;
     totalPrice: number;
-    totalItem: number;
+    amount: number;
     createdAt: string;
     status: string;
 }
@@ -22,16 +22,21 @@ interface TransactionStore {
     histories: TransactionHistory[];
     fetchHistories: (filter?: string) => Promise<void>;
     isLoading: boolean;
+    totalTransactions: number;
+    totalRevenuePerDay: number
     isSuccess: boolean;
     checkout: (
-        items: CheckoutItem[],charge:number,customerName:string
+        items: CheckoutItem[], charge: number, customerName: string
     ) => Promise<any>;
     resetState: () => void;
+    totalTransactionAndRevenue: () => void;
 }
 
 export const useTransactionStore = create<TransactionStore>((set) => ({
     isLoading: false,
     isSuccess: false,
+    totalRevenuePerDay: 0,
+    totalTransactions: 0,
     histories: [],
 
     fetchHistories: async (filter?: string) => {
@@ -50,7 +55,7 @@ export const useTransactionStore = create<TransactionStore>((set) => ({
         }
     },
 
-    checkout: async (items,charge,customerName) => {
+    checkout: async (items, charge, customerName) => {
         try {
             set({ isLoading: true, isSuccess: false });
 
@@ -77,4 +82,17 @@ export const useTransactionStore = create<TransactionStore>((set) => ({
     resetState: () => {
         set({ isSuccess: false });
     },
+    totalTransactionAndRevenue: async () => {
+        try {
+            set({ isLoading: true });
+            const response = await api.get(
+                `${ENDPOINTS.TRANSACTIONS.TOTAL}`
+            );
+            set({ totalRevenuePerDay: response.data.data.totalRevenue,totalTransactions:response.data.data.totalTransactions });
+        } catch (error) {
+            console.log("Fetch History Error:", error);
+        } finally {
+            set({ isLoading: false });
+        }
+    }
 }));

@@ -8,16 +8,14 @@ import React, { useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
-    KeyboardAvoidingView,
-    Platform,
     ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
     View
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 const AuthPage = () => {
     const insets = useSafeAreaInsets();
     const router = useRouter();
@@ -81,12 +79,14 @@ const AuthPage = () => {
     };
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            className="flex-1 bg-white"
+        <KeyboardAwareScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            enableOnAndroid={true}
+            extraScrollHeight={20} 
         >
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-                {/* Header */}
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}>
                 <View
                     className="bg-lime-400 rounded-b-[50px] px-8 pb-16 shadow-2xl shadow-lime-200"
                     style={{ paddingTop: insets.top + 40 }}
@@ -108,26 +108,26 @@ const AuthPage = () => {
                                 icon={<User size={18} color="#9CA3AF" />}
                                 placeholder="Tulis namamu..."
                                 value={formData.name}
-                                onChangeText={(txt:any) => setFormData({ ...formData, name: txt })}
+                                onChangeText={(txt: any) => setFormData({ ...formData, name: txt })}
                             />
                         )}
 
                         <InputField
                             label="Email Address"
                             icon={<Mail size={18} color="#9CA3AF" />}
-                            placeholder="email@bisnis.com"
+                            placeholder="Masukan Email"
                             keyboardType="email-address"
                             value={formData.email}
-                            onChangeText={(txt:any) => setFormData({ ...formData, email: txt })}
+                            onChangeText={(txt: any) => setFormData({ ...formData, email: txt })}
                         />
 
                         <InputField
                             label="Password"
                             icon={<Lock size={18} color="#9CA3AF" />}
-                            placeholder="••••••••"
+                            placeholder="Masukan Password"
                             secureTextEntry={secureText}
                             value={formData.password}
-                            onChangeText={(txt:any) => setFormData({ ...formData, password: txt })}
+                            onChangeText={(txt: any) => setFormData({ ...formData, password: txt })}
                             rightIcon={
                                 <TouchableOpacity onPress={() => setSecureText(!secureText)}>
                                     {secureText ? <Eye size={18} color="#9CA3AF" /> : <EyeOff size={18} color="#9CA3AF" />}
@@ -142,7 +142,7 @@ const AuthPage = () => {
                                 placeholder="••••••••"
                                 secureTextEntry={secureText}
                                 value={formData.confirmPassword}
-                                onChangeText={(txt:any) => setFormData({ ...formData, confirmPassword: txt })}
+                                onChangeText={(txt: any) => setFormData({ ...formData, confirmPassword: txt })}
                             />
                         )}
                     </View>
@@ -179,7 +179,7 @@ const AuthPage = () => {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-        </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
     );
 };
 

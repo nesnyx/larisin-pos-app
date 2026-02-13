@@ -20,7 +20,6 @@ const HistoryTransaction = () => {
 
     // --- LOGIC SEARCH YANG AMAN ---
     const filteredHistory = useMemo(() => {
-        // Pastikan histories adalah array sebelum diproses
         const data = Array.isArray(histories) ? histories : [];
         
         if (!search.trim()) return data;
@@ -28,8 +27,6 @@ const HistoryTransaction = () => {
         const searchLower = search.toLowerCase();
         
         return data.filter((item) => {
-            // Gunakan optional chaining (?.) dan fallback string kosong ('')
-            // Ini mencegah error "toLowerCase of undefined"
             const name = item?.customerName?.toLowerCase() ?? '';
             const inv = item?.invoice?.toLowerCase() ?? '';
             
@@ -137,7 +134,7 @@ const HistoryTransaction = () => {
 
                                 <View className="flex-row justify-between items-center mt-2">
                                     <Text className="text-gray-400 text-xs font-medium">
-                                        {item?.totalItem ?? 0} Produk • {time}
+                                        {item?.amount ?? 0} Produk • {time}
                                     </Text>
                                     <ChevronRight size={16} color="#9CA3AF" />
                                 </View>

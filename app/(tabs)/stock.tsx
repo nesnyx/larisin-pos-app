@@ -4,7 +4,6 @@ import { AlertCircle, Filter, MoreHorizontal, Package, Plus, Search } from 'luci
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
-  Image,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
@@ -20,15 +19,24 @@ const InventoryScreen = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
-  const {items, fetchProduct} = useProductsStore()
-  const [loading, setLoading] = useState(true);
-  
+  const items = useProductsStore(state => state.items)
+  const fetchProduct = useProductsStore(state => state.fetchProduct)
+
+
+  const filteredItems = useMemo(() => {
+    return items.filter((product: any) =>
+      product.name.toLowerCase().includes(search.toLowerCase()) ||
+      product.category.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, items]); // Berjalan ulang jika 'search' atau 'items' berubah
+
   useFocusEffect(
     useCallback(() => {
       fetchProduct();
-      return () => {};
+      return () => { };
     }, []),
   );
+
 
 
 
@@ -40,12 +48,12 @@ const InventoryScreen = () => {
           <Text className="text-3xl font-black text-gray-900 tracking-tight">Inventori</Text>
           <Text className="text-gray-500 font-medium">{items.length} Produk Terdaftar</Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           activeOpacity={0.7}
-          onPress={()=>{
+          onPress={() => {
             router.push({
-            pathname:"/product-create"
-          })
+              pathname: "/product-create"
+            })
           }}
           className="bg-lime-400 w-14 h-14 rounded-2xl items-center justify-center shadow-lg shadow-lime-400/40"
         >
@@ -57,8 +65,8 @@ const InventoryScreen = () => {
       <View className="flex-row gap-3 mb-2">
         <View className="flex-1 flex-row items-center bg-white border border-gray-100 rounded-2xl px-4 shadow-sm h-14">
           <Search size={20} color="#9CA3AF" />
-          <TextInput 
-            placeholder="Cari produk..." 
+          <TextInput
+            placeholder="Cari produk..."
             className="flex-1 ml-3 font-semibold text-gray-800 h-full"
             value={search}
             onChangeText={setSearch}
@@ -74,36 +82,29 @@ const InventoryScreen = () => {
   ), [search, items.length]);
 
   // --- COMPONENT: ITEM CARD ---
-  const renderProductItem = ({ item } : any) => {
+  const renderProductItem = ({ item }: any) => {
     const isLowStock = item.stock > 0 && item.stock <= 5;
     const isEmpty = item.stock === 0;
 
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         activeOpacity={0.8}
         className="mx-6 mb-4 bg-white rounded-[28px] p-4 flex-row items-center border border-gray-50 shadow-sm shadow-gray-200"
-        onPress={()=>{
+        onPress={() => {
           router.push({
-            pathname:"/product-detail",
-            params:{
+            pathname: "/product-detail",
+            params: {
               ...item
             }
           })
         }}
       >
-        <View className="relative">
-          <Image source={{ uri: item.image }} className="w-20 h-20 rounded-2xl bg-gray-100" />
-          {isEmpty && (
-            <View className="absolute inset-0 bg-black/50 rounded-2xl items-center justify-center">
-              <Text className="text-white text-[10px] font-black uppercase">Habis</Text>
-            </View>
-          )}
-        </View>
+
 
         <View className="flex-1 ml-4 justify-between h-20 py-1">
           <Text className="text-[10px] font-bold text-lime-600 uppercase tracking-widest mb-1">{item.category}</Text>
           <Text className="text-base font-bold text-gray-800 leading-5" numberOfLines={1}>{item.name}</Text>
-          
+
           <View className="flex-row items-center mt-2">
             <Text className="text-gray-900 font-black text-lg">Rp {item.price.toLocaleString()}</Text>
           </View>
@@ -113,7 +114,7 @@ const InventoryScreen = () => {
           <TouchableOpacity className="p-1">
             <MoreHorizontal size={22} color="#9CA3AF" />
           </TouchableOpacity>
-          
+
           <View className={`flex-row items-center px-3 py-1.5 rounded-xl ${isEmpty ? 'bg-red-50' : isLowStock ? 'bg-amber-50' : 'bg-gray-50'}`}>
             {isLowStock || isEmpty ? (
               <AlertCircle size={12} color={isEmpty ? "#EF4444" : "#F59E0B"} />
@@ -132,21 +133,21 @@ const InventoryScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       <StatusBar barStyle="dark-content" />
-      
+
       {/* KeyboardAvoidingView memastikan input tidak tertutup keyboard di iOS/Android */}
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
         <FlatList
-          data={items}
+          data={filteredItems}
           renderItem={renderProductItem}
-          keyExtractor={(item:any) => item.id}
+          keyExtractor={(item: any) => item.id}
           ListHeaderComponent={ListHeader}
           // Agar ListHeader (termasuk search bar) berhenti tepat di bawah notch
-          contentContainerStyle={{ 
-            paddingTop: insets.top, 
-            paddingBottom: insets.bottom + 100 
+          contentContainerStyle={{
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom + 100
           }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -154,6 +155,7 @@ const InventoryScreen = () => {
           initialNumToRender={7}
           maxToRenderPerBatch={10}
           removeClippedSubviews={true}
+          windowSize={5}
           ListEmptyComponent={() => (
             <View className="items-center justify-center mt-20">
               <Package size={64} color="#E5E7EB" />

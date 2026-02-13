@@ -52,7 +52,7 @@ const ProductDetailModal = () => {
 
   return (
     <View className="flex-1">
-      <Modal animationType="fade" transparent={true} visible={true}>
+      <Modal animationType="slide" transparent={true} visible={true}>
         <View className="flex-1 bg-black/50 justify-end">
           <View
             className="bg-white rounded-t-[40px]"
