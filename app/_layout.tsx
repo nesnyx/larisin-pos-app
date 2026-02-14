@@ -9,12 +9,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import "../global.css";
+
 export const unstable_settings = {
   initialRouteName: 'auth',
 };
 
-
-// Komponen Banner Offline
 function OfflineBanner() {
   const isOnline = useCheckInternet();
   const insets = useSafeAreaInsets();
@@ -36,26 +35,27 @@ function OfflineBanner() {
 
 export default function RootLayout() {
   const { isLoggedIn, hydrateAuth, loading } = useAuthStore();
-
   useEffect(() => {
     hydrateAuth();
   }, []);
 
-
   if (loading) {
-    return null; 
+    return null;
   }
   return (
     <GestureHandlerRootView >
       <SafeAreaProvider>
         <OfflineBanner />
         <Stack>
-          <Stack.Screen name="auth" options={{ headerShown: false }} />
-          <Stack.Protected guard={isLoggedIn}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="product-detail" options={{ headerShown: false, presentation: 'transparentModal' }} />
-            <Stack.Screen name="product-create" options={{ headerShown: false, presentation: 'transparentModal' }} />
-          </Stack.Protected>
+          {!isLoggedIn ? (
+            <Stack.Screen name="auth" />
+          ) : (
+            <>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="product-detail" options={{ presentation: 'transparentModal' }} />
+              <Stack.Screen name="product-create" options={{ presentation: 'transparentModal' }} />
+            </>
+          )}
         </Stack>
         <StatusBar style="auto" />
       </SafeAreaProvider>

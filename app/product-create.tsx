@@ -88,9 +88,9 @@ const ProductCreateModal = () => {
     };
 
     return (
-        <Modal animationType="slide" // Ganti ke slide agar lebih smooth dari bawah
+        <Modal animationType="slide" 
             transparent={true}
-            visible={true} // Pastikan ada props visible
+            visible={true} 
             statusBarTranslucent>
             <View className="flex-1 bg-black/50 justify-end">
                 <Animated.View

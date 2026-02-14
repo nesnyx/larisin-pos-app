@@ -20,7 +20,7 @@ interface UserState {
     hydrateAuth: () => void
 }
 
-export const useUserStore = create<UserState>((set,get) => ({
+export const useUserStore = create<UserState>((set, get) => ({
     profile: null,
     isLoggedIn: false,
     loading: false,
@@ -42,17 +42,21 @@ export const useUserStore = create<UserState>((set,get) => ({
     clearProfile: () => set({ profile: null, isLoggedIn: false }),
     hydrateAuth: async () => {
         set({ loading: true });
-        const token = await SecureStore.getItemAsync("userToken");
-        if (token) {
-            try {
+        try {
+            const token = await SecureStore.getItemAsync("userToken");
+            if (token) {
+                // Opsional: Validasi token ke API di sini
                 set({ isLoggedIn: true });
                 await get().fetchProfile();
-            } catch {
+            } else {
                 set({ isLoggedIn: false });
             }
+        } catch (error) {
+            set({ isLoggedIn: false });
+            await SecureStore.deleteItemAsync("userToken"); // Hapus jika corrupt
+        } finally {
+            set({ loading: false });
         }
-
-        set({ loading: false });
     }
 }));
 
