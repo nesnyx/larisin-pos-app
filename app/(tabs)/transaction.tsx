@@ -1,4 +1,7 @@
-import { CheckCircle2, ChevronRight, Minus, Plus, ShoppingBag, User, Wallet, X } from 'lucide-react-native';
+import CustomAlert from '@/components/custom-alert';
+import { useProductsStore } from '@/store/useProductsStore';
+import { useTransactionStore } from '@/store/useTransaction';
+import { ChevronRight, Minus, Plus, ShoppingBag, User, Wallet, X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,45 +11,66 @@ const TransactionPage = () => {
     const [cart, setCart] = useState([]);
     const [isCartVisible, setIsCartVisible] = useState(false);
     const [isCheckoutVisible, setIsCheckoutVisible] = useState(false);
-
+    const { checkout, isLoading } = useTransactionStore();
+    const [alertConfig, setAlertConfig] = useState({
+        visible: false,
+        type: 'info' as 'success' | 'error' | 'info',
+        title: '',
+        message: ''
+    });
+    const notify = (title: string, msg: string, type: 'success' | 'error' | 'info' = 'error') => {
+        setAlertConfig({
+            visible: true,
+            title,
+            message: msg,
+            type
+        });
+    };
     // Form States
     const [customerName, setCustomerName] = useState('');
     const [cashAmount, setCashAmount] = useState('');
 
-    // Dummy Data
-    const products = [
-        { id: '1', name: 'Kopi Susu Gula Aren', price: 15000, stock: 20, category: 'Minuman' },
-        { id: '2', name: 'Roti Bakar Cokelat', price: 12000, stock: 15, category: 'Makanan' },
-        { id: '3', name: 'Es Teh Manis', price: 5000, stock: 50, category: 'Minuman' },
-    ];
-
-    const addToCart = (product:any) => {
-        setCart((prev:any) => {
-            const existing = prev.find((item:any) => item.id === product.id);
-            if (existing) return prev.map((item:any) => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+    const items = useProductsStore(state => state.items)
+    const fetchHistories = useTransactionStore(state => state.fetchHistories)
+    const addToCart = (product: any) => {
+        setCart((prev: any) => {
+            const existing = prev.find((item: any) => item.id === product.id);
+            if (existing) return prev.map((item: any) => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
             return [...prev, { ...product, qty: 1 }];
         });
     };
 
-    const updateQty = (id:any, delta:any) => {
-        setCart((prev:any) => prev.map((item:any) => item.id === id ? { ...item, qty: Math.max(0, item.qty + delta) } : item).filter((item:any) => item.qty > 0));
+    const updateQty = (id: any, delta: any) => {
+        setCart((prev: any) => prev.map((item: any) => item.id === id ? { ...item, qty: Math.max(0, item.qty + delta) } : item).filter((item: any) => item.qty > 0));
     };
 
-    const totalPrice = cart.reduce((sum:any, item:any) => sum + (item.price * item.qty), 0);
-    const totalItem = cart.reduce((sum:any, item:any) => sum + item.qty, 0);
-    
+    const totalPrice = cart.reduce((sum: any, item: any) => sum + (item.price * item.qty), 0);
+    const totalItem = cart.reduce((sum: any, item: any) => sum + item.qty, 0);
+
     // Kalkulasi Kembalian
     const changeAmount = Number(cashAmount) - totalPrice;
     const isPaymentValid = Number(cashAmount) >= totalPrice && totalPrice > 0;
 
-    const handleFinishTransaction = () => {
-        alert(`Transaksi Berhasil!\nCustomer: ${customerName}\nKembalian: Rp ${changeAmount.toLocaleString()}`);
-        // Reset All
-        setCart([]);
-        setCustomerName('');
-        setCashAmount('');
-        setIsCheckoutVisible(false);
-        setIsCartVisible(false);
+    const handleFinishTransaction = async () => {
+        try {
+
+            const payloadItems = cart.map((item: any) => ({
+                productId: item.id,
+                quantity: item.qty
+            }));
+
+            await checkout(payloadItems, Number(cashAmount), customerName);
+            notify("Berhasil!", `Transaksi atas nama ${customerName}`, 'success');
+
+            setCart([]);
+            setCustomerName('');
+            setCashAmount('');
+            setIsCheckoutVisible(false);
+            setIsCartVisible(false);
+            fetchHistories()
+        } catch (error) {
+            notify("Error!", `Terjadi Kesalahan`, 'error');
+        }
     };
 
     return (
@@ -60,8 +84,8 @@ const TransactionPage = () => {
                 </TouchableOpacity>
             </View>
 
-            <FlatList 
-                data={products}
+            <FlatList
+                data={items}
                 numColumns={2}
                 contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
                 renderItem={({ item }) => (
@@ -69,6 +93,12 @@ const TransactionPage = () => {
                         <Text className="font-bold text-gray-800 text-base mb-1">{item.name}</Text>
                         <Text className="font-black text-lime-600 text-sm">Rp {item.price.toLocaleString()}</Text>
                     </TouchableOpacity>
+                )}
+                ListEmptyComponent={() => (
+                    <View className="items-center justify-center mt-20">
+                        <ShoppingBag size={32} color="#E5E7EB" />
+                        <Text className="text-gray-400 mt-4 font-semibold text-lg">Produk Kosong</Text>
+                    </View>
                 )}
             />
 
@@ -91,16 +121,23 @@ const TransactionPage = () => {
                             <TouchableOpacity onPress={() => setIsCartVisible(false)}><X size={24} color="#000" /></TouchableOpacity>
                         </View>
                         <ScrollView className="px-8">
-                            {cart.map((item :any)=> (
-                                <View key={item.id} className="flex-row items-center mb-6">
-                                    <View className="flex-1"><Text className="font-bold text-gray-800">{item.name}</Text><Text className="text-gray-400 text-sm">Rp {item.price.toLocaleString()}</Text></View>
-                                    <View className="flex-row items-center bg-gray-100 rounded-2xl p-1">
-                                        <TouchableOpacity onPress={() => updateQty(item.id, -1)} className="bg-white p-2 rounded-xl"><Minus size={16} color="#374151" /></TouchableOpacity>
-                                        <Text className="mx-4 font-black text-gray-900">{item.qty}</Text>
-                                        <TouchableOpacity onPress={() => updateQty(item.id, 1)} className="bg-gray-900 p-2 rounded-xl"><Plus size={16} color="#fff" /></TouchableOpacity>
+                            {cart.length !== 0 ? (
+                                cart.map((item: any) => (
+                                    <View key={item.id} className="flex-row items-center mb-6">
+                                        <View className="flex-1"><Text className="font-bold text-gray-800">{item.name}</Text><Text className="text-gray-400 text-sm">Rp {item.price.toLocaleString()}</Text></View>
+                                        <View className="flex-row items-center bg-gray-100 rounded-2xl p-1">
+                                            <TouchableOpacity onPress={() => updateQty(item.id, -1)} className="bg-white p-2 rounded-xl"><Minus size={16} color="#374151" /></TouchableOpacity>
+                                            <Text className="mx-4 font-black text-gray-900">{item.qty}</Text>
+                                            <TouchableOpacity onPress={() => updateQty(item.id, 1)} className="bg-gray-900 p-2 rounded-xl"><Plus size={16} color="#fff" /></TouchableOpacity>
+                                        </View>
                                     </View>
+                                ))
+                            ) : (
+                                <View className="items-center justify-center mt-20">
+                                    <ShoppingBag size={32} color="#E5E7EB" />
+                                    <Text className="text-gray-400 mt-4 font-semibold text-lg">Keranjang Kosong</Text>
                                 </View>
-                            ))}
+                            )}
                         </ScrollView>
                         <View className="px-8 py-6 border-t border-gray-50" style={{ paddingBottom: insets.bottom + 20 }}>
                             {cart.length === 0 ? <TouchableOpacity onPress={() => setIsCartVisible(false)} className="bg-slate-400 h-16 rounded-[24px] items-center justify-center">
@@ -133,7 +170,7 @@ const TransactionPage = () => {
                                         <User size={14} color="#9CA3AF" />
                                         <Text className="text-gray-500 font-bold text-[10px] uppercase ml-1">Nama Customer</Text>
                                     </View>
-                                    <TextInput 
+                                    <TextInput
                                         className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-gray-800 font-bold"
                                         placeholder="Contoh: Budi Santoso"
                                         value={customerName}
@@ -147,12 +184,12 @@ const TransactionPage = () => {
                                         <Wallet size={14} color="#9CA3AF" />
                                         <Text className="text-gray-500 font-bold text-[10px] uppercase ml-1">Uang Tunai (Cash)</Text>
                                     </View>
-                                    <TextInput 
+                                    <TextInput
                                         className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-gray-800 font-black text-xl"
                                         placeholder="Rp 0"
                                         keyboardType="numeric"
                                         value={cashAmount}
-                                        onChangeText={(txt) => setCashAmount(txt.replace(/[^0-9]/g, ''))}
+                                        onChangeText={(txt) => setCashAmount(txt)}
                                     />
                                 </View>
 
@@ -171,12 +208,12 @@ const TransactionPage = () => {
                                 <TouchableOpacity onPress={() => setIsCheckoutVisible(false)} className="flex-1 bg-gray-100 h-14 rounded-2xl items-center justify-center">
                                     <Text className="text-gray-500 font-bold">Batal</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     onPress={handleFinishTransaction}
-                                    disabled={!isPaymentValid}
-                                    className={`flex-[2] h-14 rounded-2xl flex-row items-center justify-center ${isPaymentValid ? 'bg-lime-400 shadow-lg shadow-lime-200' : 'bg-gray-200'}`}
+                                    disabled={!isPaymentValid || isLoading}
+                                    className={`flex-[2] h-14 rounded-2xl flex-row items-center justify-center ${isPaymentValid && !isLoading ? 'bg-lime-400' : 'bg-gray-200'
+                                        }`}
                                 >
-                                    <CheckCircle2 size={20} color="white" />
                                     <Text className="text-white font-black ml-2">Selesaikan</Text>
                                 </TouchableOpacity>
                             </View>
@@ -184,6 +221,13 @@ const TransactionPage = () => {
                     </View>
                 </KeyboardAvoidingView>
             </Modal>
+            <CustomAlert
+                visible={alertConfig.visible}
+                type={alertConfig.type}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                onClose={() => setAlertConfig({ ...alertConfig, visible: false })}
+            />
         </View>
     );
 };
