@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const AuthPage = () => {
     const insets = useSafeAreaInsets();
     const router = useRouter();
-
+    
     const [isLogin, setIsLogin] = useState(true);
     const [secureText, setSecureText] = useState(true);
     const [loading, setLoading] = useState(false);

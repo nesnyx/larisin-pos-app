@@ -40,7 +40,7 @@ const DashboardUMKM = () => {
 
           {/* Main Stats Card */}
           <View className="bg-lime-400 p-6 rounded-[32px] mb-8 shadow-xl shadow-lime-400/30">
-            <Text className="text-lime-900 font-medium opacity-80">Total Penjualan Hari Ini</Text>
+            <Text className="text-lime-900 font-medium opacity-80">Total Pendapatan Penjualan</Text>
             <View className="flex-row items-end mt-1">
               <Text className="text-4xl font-extrabold text-lime-950">Rp {totalRevenuePerDay.toLocaleString('id-ID')}</Text>
             </View>
