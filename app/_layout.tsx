@@ -36,6 +36,7 @@ function OfflineBanner() {
 export default function RootLayout() {
   const hydrateAuth = useAuthStore((state) => state.hydrateAuth);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const loading = useAuthStore((state) => state.loading);
  
   useEffect(() => {
     async function prepare() {
@@ -47,10 +48,11 @@ export default function RootLayout() {
         await SplashScreen.hideAsync();
       }
     }
-
     prepare();
   }, []);
-  
+  if (loading) {
+    return <CustomLoadingScreen/>
+  }
   return (
     <GestureHandlerRootView >
       <SafeAreaProvider>

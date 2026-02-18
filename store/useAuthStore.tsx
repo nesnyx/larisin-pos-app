@@ -26,9 +26,8 @@ export const useUserStore = create<UserState>()(
     (set, get) => ({
       profile: null,
       isLoggedIn: false,
-      loading: true,
+      loading: false,
 
-      // Simpan token ke storage dan update state
       setToken: async (token: string) => {
         await AsyncStorage.setItem("userToken", token);
         set({ isLoggedIn: true });
@@ -51,12 +50,12 @@ export const useUserStore = create<UserState>()(
 
     
       hydrateAuth: async () => {
-        set({ loading: true });
         try {
           const token = await AsyncStorage.getItem("userToken");
           if (token) {
             await get().fetchProfile();
             if (get().isLoggedIn) {
+              set({ loading: false });
               router.replace("/(tabs)");
             }
           } else {
