@@ -1,6 +1,5 @@
 import useAuthStore from '@/store/useAuthStore';
-import { router, useFocusEffect } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
+import { useFocusEffect } from 'expo-router';
 import {
     LockIcon,
     LogOut,
@@ -13,7 +12,6 @@ import {
 import React, { useCallback } from 'react';
 import {
     Modal,
-    Platform,
     ScrollView,
     Text,
     TouchableOpacity,
@@ -23,7 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ProfileModal = ({ visible, onClose }: any) => {
     const insets = useSafeAreaInsets();
-    const { profile, fetchProfile } = useAuthStore()
+    const { profile, fetchProfile,clearProfile } = useAuthStore()
     useFocusEffect(
         useCallback(() => {
             fetchProfile()
@@ -32,13 +30,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
     );
     const handleLogout = async () => {
         try {
-            if (Platform.OS === 'web') {
-                localStorage.removeItem('userToken');
-            } else {
-                await SecureStore.deleteItemAsync('userToken');
-            }
-            onClose();
-            router.replace('/auth');
+            clearProfile()
         } catch (error) {
             console.error("Logout error", error);
         }

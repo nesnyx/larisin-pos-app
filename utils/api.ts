@@ -1,4 +1,3 @@
-import useAuthStore from "@/store/useAuthStore";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
@@ -33,9 +32,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response && error.response.status === 401) {
-      console.log("Token expired or invalid, logging out...");
       await SecureStore.deleteItemAsync("userToken");
-      useAuthStore(state => state.clearProfile)
     }
     return Promise.reject(error);
   },
