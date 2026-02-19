@@ -47,7 +47,6 @@ const DashboardUMKM = () => {
         }
       >
         <View className="px-6">
-          {/* Header Section */}
           <View className="flex-row justify-between items-center mb-8">
             <View>
               <Text className="text-gray-500 text-sm">Selamat Pagi,</Text>
@@ -67,7 +66,6 @@ const DashboardUMKM = () => {
             />
           </View>
 
-          {/* Main Stats Card */}
           <View className="bg-lime-400 p-6 rounded-[32px] mb-8 shadow-xl shadow-lime-400/30">
             <Text className="text-lime-900 font-medium opacity-80">
               Total Pendapatan Penjualan
@@ -77,10 +75,6 @@ const DashboardUMKM = () => {
                 Rp {totalRevenuePerDay.toLocaleString("id-ID")}
               </Text>
             </View>
-            {/* <View className="flex-row items-center mt-4 bg-lime-500/20 self-start px-3 py-1 rounded-full">
-              <ArrowUpRight size={16} color="#064e3b" />
-              <Text className="text-green-900 ml-1 font-bold">+12% vs kemarin</Text>
-            </View> */}
           </View>
 
           {/* Secondary Stats */}
@@ -101,7 +95,6 @@ const DashboardUMKM = () => {
             </View>
           </View>
 
-          {/* Quick Actions */}
           <Text className="text-lg font-bold text-gray-900 mb-4">
             Aksi Cepat
           </Text>

@@ -2,25 +2,25 @@ import CustomAlert from "@/components/custom-alert";
 import { useProductsStore } from "@/store/useProductsStore";
 import { useTransactionStore } from "@/store/useTransaction";
 import {
-    ChevronRight,
-    Minus,
-    Plus,
-    ShoppingBag,
-    User,
-    Wallet,
-    X,
+  ChevronRight,
+  Minus,
+  Plus,
+  ShoppingBag,
+  User,
+  Wallet,
+  X,
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-    FlatList,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -65,7 +65,7 @@ const TransactionPage = () => {
     });
   };
 
-  const updateQty = (id: any, delta: any) => {
+  const updateQty = (id: string, delta: any) => {
     setCart((prev: any) =>
       prev
         .map((item: any) =>
@@ -78,12 +78,15 @@ const TransactionPage = () => {
   };
 
   const totalPrice = cart.reduce(
-    (sum: any, item: any) => sum + item.price * item.qty,
+    (sum: number, item: { price: number; qty: number }) =>
+      sum + item.price * item.qty,
     0,
   );
-  const totalItem = cart.reduce((sum: any, item: any) => sum + item.qty, 0);
+  const totalItem = cart.reduce(
+    (sum: number, item: { qty: number }) => sum + item.qty,
+    0,
+  );
 
-  // Kalkulasi Kembalian
   const changeAmount = Number(cashAmount) - totalPrice;
   const isPaymentValid = Number(cashAmount) >= totalPrice && totalPrice > 0;
 
