@@ -3,22 +3,22 @@ import * as FileSystem from "expo-file-system/legacy";
 import { useFocusEffect } from "expo-router";
 import * as Sharing from "expo-sharing";
 import {
-    ArrowUpRight,
-    Calendar,
-    ChevronRight,
-    FileDown,
-    ReceiptText,
-    Search,
+  ArrowUpRight,
+  Calendar,
+  ChevronRight,
+  FileDown,
+  ReceiptText,
+  Search,
 } from "lucide-react-native";
 import React, { useCallback, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as XLSX from "xlsx";
@@ -67,20 +67,18 @@ const HistoryTransaction = () => {
   const [isExporting, setIsExporting] = useState(false);
 
   const exportToExcel = async () => {
-    // 1. CEK DATA KOSONG
     if (!filteredHistory || filteredHistory.length === 0) {
       Alert.alert(
         "Data Kosong",
         "Tidak ada transaksi yang bisa diekspor untuk periode ini.",
         [{ text: "OK" }],
       );
-      return; // Stop fungsi di sini
+      return;
     }
 
     setIsExporting(true);
 
     try {
-      // 2. Mapping Data
       const dataToExport = filteredHistory.map((item) => ({
         "No Invoice": item.invoice || "-",
         Pelanggan: item.customerName || "Guest",
@@ -91,20 +89,15 @@ const HistoryTransaction = () => {
           : "-",
       }));
 
-      // 3. Proses Excel
       const ws = XLSX.utils.json_to_sheet(dataToExport);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Laporan Transaksi");
       const wbout = XLSX.write(wb, { type: "base64", bookType: "xlsx" });
-
       const fileName = `Laporan_Larisin_${Date.now()}`;
 
-      // 4. Proses Simpan (SAF)
       const SAF = FileSystem.StorageAccessFramework;
-
       if (SAF) {
         const permissions = await SAF.requestDirectoryPermissionsAsync();
-
         if (permissions.granted) {
           const fileUri = await SAF.createFileAsync(
             permissions.directoryUri,
@@ -131,7 +124,6 @@ const HistoryTransaction = () => {
     }
   };
   const processSharing = async (base64Data: string, name: string) => {
-    // cacheDirectory di sini udah kebaca lagi karena pake /legacy
     const tempUri = `${FileSystem.cacheDirectory}${name}.xlsx`;
 
     await FileSystem.writeAsStringAsync(tempUri, base64Data, {

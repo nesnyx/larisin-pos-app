@@ -1,24 +1,24 @@
 import useAuthStore from "@/store/useAuthStore";
 import { useFocusEffect } from "expo-router";
 import {
-    ChevronLeft,
-    LogOut,
-    MapPin,
-    Phone,
-    Save,
-    ShieldCheck,
-    User,
-    X,
+  ChevronLeft,
+  LogOut,
+  MapPin,
+  Phone,
+  Save,
+  ShieldCheck,
+  User,
+  X,
 } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -27,7 +27,6 @@ const ProfileModal = ({ visible, onClose }: any) => {
   const { profile, fetchProfile, clearProfile, loading, updateProfile } =
     useAuthStore();
 
-  // State untuk mode edit
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -35,7 +34,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
     address: "",
   });
 
-  // Sinkronisasi data store ke form lokal saat modal buka atau profile berubah
+ 
   useEffect(() => {
     if (profile) {
       setForm({
@@ -54,7 +53,6 @@ const ProfileModal = ({ visible, onClose }: any) => {
 
   const handleSave = async () => {
     try {
-      // Asumsi updateProfile menerima object form
       await updateProfile(form);
       setIsEditing(false);
     } catch (error) {
