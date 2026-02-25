@@ -23,7 +23,7 @@ export default function HistoryTransactionDetail() {
                 onPress={() => router.back()}
                 className="bg-gray-100 p-2 rounded-full"
               >
-                <X size={20} color="#374151" />
+                <X size={20}  />
               </TouchableOpacity>
             </View>
 
@@ -31,7 +31,7 @@ export default function HistoryTransactionDetail() {
               <View>
                 <View className="flex-row items-center mb-8">
                   <View className="bg-lime-100 p-3 rounded-2xl">
-                    <ReceiptText size={24} color="#65A30D" />
+                    <ReceiptText size={24} />
                   </View>
                   <View className="ml-4">
                     <Text className="text-gray-500 font-medium">Customer</Text>

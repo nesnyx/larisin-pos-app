@@ -23,8 +23,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as XLSX from "xlsx";
 
-type FilterType = "Hari Ini" | "Minggu Ini" | "Bulan Ini";
-const filterMap: Record<FilterType, "daily" | "weekly" | "monthly"> = {
+type FilterType = "Semua" | "Hari Ini" | "Minggu Ini" | "Bulan Ini";
+const filterMap: Record<FilterType, "" | "daily" | "weekly" | "monthly"> = {
+  Semua: "",
   "Hari Ini": "daily",
   "Minggu Ini": "weekly",
   "Bulan Ini": "monthly",
@@ -32,7 +33,7 @@ const filterMap: Record<FilterType, "daily" | "weekly" | "monthly"> = {
 const HistoryTransaction = () => {
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>("Hari Ini");
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>("Semua");
   const { histories, fetchHistories, isLoading } = useTransactionStore();
 
   useFocusEffect(
@@ -151,12 +152,12 @@ const HistoryTransaction = () => {
             {isExporting ? (
               <ActivityIndicator size={20} color="#65A30D" />
             ) : (
-              <FileDown size={24} color="#65A30D" />
+              <FileDown size={24} />
             )}
           </TouchableOpacity>
 
           <TouchableOpacity className="bg-gray-100 p-3 rounded-2xl">
-            <Calendar size={24} color="#111827" />
+            <Calendar size={24} />
           </TouchableOpacity>
         </View>
       </View>
@@ -173,12 +174,12 @@ const HistoryTransaction = () => {
             </Text>
           </View>
           <View className="bg-white/20 p-3 rounded-2xl">
-            <ArrowUpRight size={28} color="white" />
+            <ArrowUpRight size={28} />
           </View>
         </View>
       </View>
       <View className="px-6 mb-4 flex-row justify-between">
-        {["Hari Ini", "Minggu Ini", "Bulan Ini"].map((item: any) => (
+        {["Semua", "Hari Ini", "Minggu Ini", "Bulan Ini"].map((item: any) => (
           <TouchableOpacity
             key={item}
             onPress={() => setSelectedFilter(item)}
@@ -199,7 +200,7 @@ const HistoryTransaction = () => {
       {/* Search Bar */}
       <View className="px-6 mb-4">
         <View className="flex-row items-center bg-gray-50 rounded-2xl px-4 py-3 border border-gray-100">
-          <Search size={20} color="#9CA3AF" />
+          <Search size={20} />
           <TextInput
             placeholder="Cari Nama atau Invoice..."
             className="flex-1 ml-3 font-medium text-gray-700"
@@ -243,7 +244,7 @@ const HistoryTransaction = () => {
               className="bg-white border border-gray-100 p-5 rounded-[28px] mb-4 flex-row items-center shadow-sm"
             >
               <View className="bg-gray-50 p-4 rounded-2xl mr-4">
-                <ReceiptText size={24} color="#374151" />
+                <ReceiptText size={24} />
               </View>
 
               <View className="flex-1">
@@ -268,7 +269,7 @@ const HistoryTransaction = () => {
                   <Text className="text-gray-400 text-xs font-medium">
                     {item?.amount ?? 0} Produk • {time}
                   </Text>
-                  <ChevronRight size={16} color="#9CA3AF" />
+                  <ChevronRight size={16} />
                 </View>
               </View>
             </TouchableOpacity>
