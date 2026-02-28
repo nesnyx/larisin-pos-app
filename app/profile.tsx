@@ -34,7 +34,6 @@ const ProfileModal = ({ visible, onClose }: any) => {
     address: "",
   });
 
- 
   useEffect(() => {
     if (profile) {
       setForm({
@@ -101,7 +100,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
                 onPress={() => setIsEditing(false)}
                 className="flex-row items-center"
               >
-                <ChevronLeft size={24} color="#111827" />
+                <ChevronLeft size={24} />
                 <Text className="text-xl font-black text-gray-900 ml-2">
                   Edit Profil
                 </Text>
@@ -117,7 +116,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
                 onPress={onClose}
                 className="bg-gray-100 p-2 rounded-full"
               >
-                <X size={20} color="#374151" />
+                <X size={20} />
               </TouchableOpacity>
             )}
           </View>
@@ -126,7 +125,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
             {/* Avatar Section */}
             <View className="items-center mb-8">
               <View className="w-24 h-24 bg-lime-100 rounded-[32px] items-center justify-center border-4 border-lime-50 mb-4">
-                <User size={48} color="#65a30d" />
+                <User size={48} />
               </View>
               {!isEditing && (
                 <>
@@ -134,7 +133,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
                     {profile?.name}
                   </Text>
                   <View className="bg-gray-100 px-3 py-1 rounded-full mt-1 flex-row items-center">
-                    <ShieldCheck size={12} color="#6b7280" />
+                    <ShieldCheck size={12} />
                     <Text className="text-[10px] font-bold text-gray-500 uppercase ml-1">
                       Administrator
                     </Text>
@@ -163,7 +162,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
                     Nomor Telepon
                   </Text>
                   <View className="flex-row items-center bg-gray-50 rounded-2xl border border-gray-100 px-4">
-                    <Phone size={18} color="#9CA3AF" />
+                    <Phone size={18} />
                     <TextInput
                       className="flex-1 p-4 font-bold text-gray-700"
                       value={form.phone}
@@ -179,7 +178,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
                     Alamat Kedai
                   </Text>
                   <View className="flex-row items-start bg-gray-50 rounded-2xl border border-gray-100 px-4 pt-4">
-                    <MapPin size={18} color="#9CA3AF" />
+                    <MapPin size={18} />
                     <TextInput
                       className="flex-1 px-4 pb-4 font-bold text-gray-700"
                       value={form.address}
@@ -201,7 +200,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
                     <ActivityIndicator color="white" />
                   ) : (
                     <>
-                      <Save size={20} color="#064e3b" />
+                      <Save size={20} />
                       <Text className="text-lime-950 font-black ml-2 text-lg">
                         Simpan Perubahan
                       </Text>
@@ -244,7 +243,7 @@ const ProfileModal = ({ visible, onClose }: any) => {
                   onPress={handleLogout}
                   className="bg-red-50 p-5 rounded-[24px] flex-row items-center justify-center border border-red-100 mb-6"
                 >
-                  <LogOut size={20} color="#ef4444" />
+                  <LogOut size={20} />
                   <Text className="text-red-500 font-bold ml-2">
                     Keluar Aplikasi
                   </Text>

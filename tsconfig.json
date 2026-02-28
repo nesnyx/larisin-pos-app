@@ -3,10 +3,12 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+      "@/*": ["./*"]
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false, // TAMBAHKAN INI (Sangat Penting!)
+    "strictPropertyInitialization": false
   },
   "include": [
     "**/*.ts",

@@ -48,7 +48,7 @@ export default function TabLayout() {
           title: 'Dashboard',
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <LayoutDashboardIcon size={focused ? 26 : 24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <LayoutDashboardIcon size={focused ? 26 : 24}  />
           ),
         }}
       />
@@ -58,7 +58,7 @@ export default function TabLayout() {
           title: 'Inventori',
           tabBarLabel: 'Stock',
           tabBarIcon: ({ color, focused }) => (
-            <Package2 size={focused ? 26 : 24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <Package2 size={focused ? 26 : 24} />
           ),
         }}
       />
@@ -68,7 +68,7 @@ export default function TabLayout() {
           title: 'Kasir',
           tabBarLabel: 'Pos',
           tabBarIcon: ({ color, focused }) => (
-            <ClipboardList size={focused ? 26 : 24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <ClipboardList size={focused ? 26 : 24} />
           ),
         }}
       />
@@ -78,7 +78,7 @@ export default function TabLayout() {
           title: 'Riwayat',
           tabBarLabel: 'History',
           tabBarIcon: ({ color, focused }) => (
-            <History size={focused ? 26 : 24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <History size={focused ? 26 : 24}  />
           ),
         }}
       />

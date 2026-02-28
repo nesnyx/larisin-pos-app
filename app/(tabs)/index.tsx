@@ -58,7 +58,7 @@ const DashboardUMKM = () => {
               onPress={() => setIsProfileVisible(true)}
               className="w-12 h-12 bg-white rounded-full items-center justify-center border border-gray-100 shadow-sm"
             >
-              <Users size={20} color="#111827" />
+              <Users size={20}  />
             </TouchableOpacity>
             <ProfileModal
               visible={isProfileVisible}
@@ -81,14 +81,14 @@ const DashboardUMKM = () => {
           <View className="flex-row justify-between mb-8">
             <View className="bg-white p-5 rounded-[24px] w-[47%] border border-gray-100 shadow-sm">
               <View className="bg-blue-100 w-10 h-10 rounded-full items-center justify-center mb-3">
-                <ShoppingBag size={20} color="#3b82f6" />
+                <ShoppingBag size={20} />
               </View>
               <Text className="text-gray-500 text-xs">Transaksi</Text>
               <Text className="text-xl font-bold">{totalTransactions}</Text>
             </View>
             <View className="bg-gray-300 p-5 rounded-[24px] w-[47%] border border-gray-100 shadow-sm">
               <View className="bg-gray-100 w-10 h-10 rounded-full items-center justify-center mb-3">
-                <LockIcon size={24} color="#6B7280" />
+                <LockIcon size={24}  />
               </View>
               <Text className="text-gray-500 text-xs">Laba Bersih</Text>
               <Text className="text-xl font-bold">Rp ---</Text>
@@ -108,7 +108,7 @@ const DashboardUMKM = () => {
               }}
               className="flex-1 bg-white p-4 rounded-2xl border border-dashed border-gray-300 items-center"
             >
-              <Plus size={24} color="#6B7280" />
+              <Plus size={24}  />
               <Text className="text-gray-600 mt-2 font-medium">
                 Tambah Stok
               </Text>
@@ -117,7 +117,7 @@ const DashboardUMKM = () => {
               disabled={true}
               className="flex-1 bg-gray-300 p-4 rounded-2xl border border-dashed border-gray-300 items-center"
             >
-              <LockIcon size={24} color="#6B7280" />
+              <LockIcon size={24} />
               <Text className="text-white-600 mt-2 font-medium">
                 Buka Kasir
               </Text>
@@ -153,7 +153,7 @@ const DashboardUMKM = () => {
             ))
           ) : (
             <View className="items-center justify-center mt-5">
-              <Package size={32} color="#E5E7EB" />
+              <Package size={32}  />
               <Text className="text-gray-400 mt-4 font-semibold text-sm">
                 Produk tidak ditemukan
               </Text>
