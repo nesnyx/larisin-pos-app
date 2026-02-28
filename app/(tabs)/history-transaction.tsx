@@ -1,6 +1,6 @@
 import { useTransactionStore } from "@/store/useTransaction";
 import * as FileSystem from "expo-file-system/legacy";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import * as Sharing from "expo-sharing";
 import {
   ArrowUpRight,
@@ -35,12 +35,11 @@ const HistoryTransaction = () => {
   const [search, setSearch] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("Semua");
   const { histories, fetchHistories, isLoading } = useTransactionStore();
-
   useFocusEffect(
     useCallback(() => {
       const period = filterMap[selectedFilter];
       fetchHistories(period);
-      return () => {};
+      return () => { };
     }, [selectedFilter]),
   );
 
@@ -183,14 +182,12 @@ const HistoryTransaction = () => {
           <TouchableOpacity
             key={item}
             onPress={() => setSelectedFilter(item)}
-            className={`px-4 py-2 rounded-2xl ${
-              selectedFilter === item ? "bg-gray-900" : "bg-gray-100"
-            }`}
+            className={`px-4 py-2 rounded-2xl ${selectedFilter === item ? "bg-gray-900" : "bg-gray-100"
+              }`}
           >
             <Text
-              className={`font-bold text-xs ${
-                selectedFilter === item ? "text-white" : "text-gray-600"
-              }`}
+              className={`font-bold text-xs ${selectedFilter === item ? "text-white" : "text-gray-600"
+                }`}
             >
               {item}
             </Text>
@@ -242,6 +239,14 @@ const HistoryTransaction = () => {
             <TouchableOpacity
               activeOpacity={0.7}
               className="bg-white border border-gray-100 p-5 rounded-[28px] mb-4 flex-row items-center shadow-sm"
+              onPress={() => {
+                router.push({
+                  pathname: "/history-transaction-detail",
+                  params: {
+                    id: item.id
+                  }
+                });
+              }}
             >
               <View className="bg-gray-50 p-4 rounded-2xl mr-4">
                 <ReceiptText size={24} />

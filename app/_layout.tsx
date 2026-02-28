@@ -65,6 +65,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="product-detail" options={{ headerShown: false, presentation: 'transparentModal' }} />
             <Stack.Screen name="product-create" options={{ headerShown: false, presentation: 'transparentModal' }} />
+            <Stack.Screen name="history-transaction-detail" options={{ headerShown: false, presentation: 'transparentModal' }} />
           </Stack.Protected>
         </Stack>
         <StatusBar style="auto" />

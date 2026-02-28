@@ -14,7 +14,7 @@ export const ENDPOINTS = {
         LIST: "/transactions",
         CHECKOUT: "/transactions",
         TOTAL: "/transactions/revenue/summary",
-        DETAIL: "/transactions"
+        DETAIL: (id : string) =>"/transactions/"+id
     },
     USER: {
         UPDATE_PROFILE: "/user/profile"
