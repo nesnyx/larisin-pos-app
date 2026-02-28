@@ -125,7 +125,7 @@ const ProductCreateModal = () => {
                                 className="bg-gray-100 p-2 rounded-full"
                                 disabled={loading}
                             >
-                                <X size={20} color="#374151" />
+                                <X size={20}  />
                             </TouchableOpacity>
                         </View>
 
@@ -192,7 +192,7 @@ const ProductCreateModal = () => {
                                             disabled={loading}
                                             className="bg-white w-14 h-14 rounded-2xl items-center justify-center shadow-sm"
                                         >
-                                            <Minus size={24} color="#374151" />
+                                            <Minus size={24} />
                                         </TouchableOpacity>
                                         <View className="items-center">
                                             <Text className="text-4xl font-black text-gray-900">{tempStock}</Text>
@@ -203,7 +203,7 @@ const ProductCreateModal = () => {
                                             disabled={loading}
                                             className="bg-lime-400 w-14 h-14 rounded-2xl items-center justify-center shadow-md shadow-lime-200"
                                         >
-                                            <Plus size={24} color="white" />
+                                            <Plus size={24} />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -226,7 +226,7 @@ const ProductCreateModal = () => {
                                     </View>
                                 ) : (
                                     <>
-                                        <ShoppingBag size={20} color="white" />
+                                        <ShoppingBag size={20}  />
                                         <Text className="text-white font-bold text-base ml-2">Simpan Produk</Text>
                                     </>
                                 )}

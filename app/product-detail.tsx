@@ -64,7 +64,7 @@ const ProductDetailModal = () => {
                 {isEditing ? "Edit Produk" : "Detail Produk"}
               </Text>
               <TouchableOpacity onPress={() => isEditing ? setIsEditing(false) : router.back()} className="bg-gray-100 p-2 rounded-full">
-                <X size={20} color="#374151" />
+                <X size={20} />
               </TouchableOpacity>
             </View>
 
@@ -118,7 +118,7 @@ const ProductDetailModal = () => {
                   onPress={() => setTempStock(Math.max(0, tempStock - 1))}
                   className="bg-gray-100 w-12 h-12 rounded-2xl items-center justify-center"
                 >
-                  <Minus size={24} color="#374151" />
+                  <Minus size={24} />
                 </TouchableOpacity>
                 <View className="items-center">
                   <Text className="text-3xl font-black text-gray-900">{tempStock}</Text>
@@ -128,7 +128,7 @@ const ProductDetailModal = () => {
                   onPress={() => setTempStock(tempStock + 1)}
                   className="bg-lime-400 w-12 h-12 rounded-2xl items-center justify-center"
                 >
-                  <Plus size={24} color="white" />
+                  <Plus size={24} />
                 </TouchableOpacity>
               </View>
 
@@ -148,7 +148,7 @@ const ProductDetailModal = () => {
                     onPress={() => setShowDeleteConfirm(true)}
                     className="bg-red-50 w-16 h-16 rounded-[24px] items-center justify-center border border-red-100"
                   >
-                    <Trash2 size={24} color="#EF4444" />
+                    <Trash2 size={24}  />
                   </TouchableOpacity>
                 )}
               </View>
@@ -167,7 +167,7 @@ const ProductDetailModal = () => {
         <View className="flex-1 bg-black/60 justify-center items-center px-8">
           <View className="bg-white w-full rounded-[32px] p-8 items-center">
             <View className="bg-red-100 p-4 rounded-full mb-4">
-              <Trash2 size={32} color="#EF4444" />
+              <Trash2 size={32}  />
             </View>
 
             <Text className="text-xl font-black text-gray-900 mb-2">Hapus Produk?</Text>

@@ -14,17 +14,17 @@ const CustomAlert = ({ visible, type, title, message, onClose }: CustomAlertProp
     // Konfigurasi berdasarkan tipe
     const config = {
         success: {
-            icon: <CheckCircle2 size={40} color="#84cc16" />, // lime-500
+            icon: <CheckCircle2 size={40} />, // lime-500
             bgColor: 'bg-lime-50',
             buttonColor: 'bg-lime-500',
         },
         error: {
-            icon: <XCircle size={40} color="#ef4444" />, // red-500
+            icon: <XCircle size={40} />, // red-500
             bgColor: 'bg-red-50',
             buttonColor: 'bg-red-500',
         },
         info: {
-            icon: <Info size={40} color="#3b82f6" />, // blue-500
+            icon: <Info size={40}  />, // blue-500
             bgColor: 'bg-blue-50',
             buttonColor: 'bg-blue-500',
         },

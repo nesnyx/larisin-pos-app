@@ -1,6 +1,6 @@
 import { ENDPOINTS } from "@/constants/endpoints";
 import api from "@/utils/api";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -9,6 +9,13 @@ interface UserProfile {
   userId: string;
   name: string;
   phone?: string;
+  address?: string;
+}
+
+interface UpdateProfilePayload {
+  name: string;
+  phone: string;
+  address: string;
 }
 
 interface UserState {
@@ -19,6 +26,7 @@ interface UserState {
   fetchProfile: () => Promise<void>;
   clearProfile: () => Promise<void>;
   hydrateAuth: () => Promise<void>;
+  updateProfile: (profile: UpdateProfilePayload) => Promise<void>;
 }
 
 export const useUserStore = create<UserState>()(
@@ -47,8 +55,14 @@ export const useUserStore = create<UserState>()(
         set({ profile: null, isLoggedIn: false });
         router.replace("/auth");
       },
-
-    
+      updateProfile: async (payload: UpdateProfilePayload) => {
+        try {
+          await api.patch(ENDPOINTS.USER.UPDATE_PROFILE, payload);
+          await get().fetchProfile();
+        } catch (error) {
+          console.error("Failed to update profile", error);
+        }
+      },
       hydrateAuth: async () => {
         try {
           const token = await AsyncStorage.getItem("userToken");
@@ -74,12 +88,12 @@ export const useUserStore = create<UserState>()(
       name: "user-auth-storage", // Kunci unik untuk AsyncStorage
       storage: createJSONStorage(() => AsyncStorage),
       // Kita hanya ingin mem-persist state ini saja
-      partialize: (state) => ({ 
-        isLoggedIn: state.isLoggedIn, 
-        profile: state.profile 
+      partialize: (state) => ({
+        isLoggedIn: state.isLoggedIn,
+        profile: state.profile,
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default useUserStore;

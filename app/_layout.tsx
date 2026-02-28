@@ -25,7 +25,7 @@ function OfflineBanner() {
       style={{ paddingTop: insets.top }}
       className="bg-red-500 w-full absolute top-0 z-[999] flex-row items-center justify-center py-2 px-4 shadow-md"
     >
-      <WifiOff size={14} color="white" />
+      <WifiOff size={14} />
       <Text className="text-white text-[11px] font-bold ml-2">
         Koneksi Terputus. Memeriksa jaringan...
       </Text>
@@ -65,6 +65,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="product-detail" options={{ headerShown: false, presentation: 'transparentModal' }} />
             <Stack.Screen name="product-create" options={{ headerShown: false, presentation: 'transparentModal' }} />
+            <Stack.Screen name="history-transaction-detail" options={{ headerShown: false, presentation: 'transparentModal' }} />
           </Stack.Protected>
         </Stack>
         <StatusBar style="auto" />

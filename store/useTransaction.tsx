@@ -2,100 +2,110 @@ import { ENDPOINTS } from "@/constants/endpoints";
 import api from "@/utils/api";
 import { create } from "zustand";
 
-
 export interface TransactionHistory {
-    id: string;
-    invoice: string;
-    customerName: string;
-    totalPrice: number;
-    amount: number;
-    createdAt: string;
-    status: string;
+  id: string;
+  invoice: string;
+  customerName: string;
+  totalPrice: number;
+  amount: number;
+  createdAt: string;
+  status: string;
 }
 
 interface CheckoutItem {
-    productId: string;
-    quantity: number;
+  productId: string;
+  quantity: number;
 }
 
 interface TransactionStore {
-    histories: TransactionHistory[];
-    fetchHistories: (period?:string) => Promise<void>;
-    isLoading: boolean;
-    totalTransactions: number;
-    totalRevenuePerDay: number
-    isSuccess: boolean;
-    checkout: (
-        items: CheckoutItem[], charge: number, customerName: string
-    ) => Promise<any>;
-    resetState: () => void;
-    totalTransactionAndRevenue: () => void;
+  histories: TransactionHistory[];
+  fetchHistories: (period?: string) => Promise<void>;
+  isLoading: boolean;
+  totalTransactions: number;
+  totalRevenuePerDay: number;
+  isSuccess: boolean;
+  fetchDetailTransaction: (id: string) => Promise<void>;
+  detailTransaction: TransactionHistory | null;
+  checkout: (
+    items: CheckoutItem[],
+    charge: number,
+    customerName: string,
+  ) => Promise<any>;
+  resetState: () => void;
+  totalTransactionAndRevenue: () => void;
 }
 
 export const useTransactionStore = create<TransactionStore>((set) => ({
-    isLoading: false,
-    isSuccess: false,
-    totalRevenuePerDay: 0,
-    totalTransactions: 0,
-    histories: [],
+  isLoading: false,
+  isSuccess: false,
+  totalRevenuePerDay: 0,
+  totalTransactions: 0,
+  histories: [],
+  detailTransaction: null,
 
-    fetchHistories: async (period?: string) => {
+  fetchHistories: async (period?: string) => {
     try {
-        set({ isLoading: true });
+      set({ isLoading: true });
 
-        const response = await api.get(
-            `${ENDPOINTS.TRANSACTIONS.LIST}`,
-            {
-                params: { period }
-            }
-        );
+      const response = await api.get(`${ENDPOINTS.TRANSACTIONS.LIST}`, {
+        params: { period },
+      });
 
-        set({ histories: response.data.data });
+      set({ histories: response.data.data });
     } catch (error) {
-        console.log("Fetch History Error:", error);
+      console.log("Fetch History Error:", error);
     } finally {
-        set({ isLoading: false });
+      set({ isLoading: false });
     }
-},
+  },
 
-    checkout: async (items, charge, customerName) => {
-        try {
-            set({ isLoading: true, isSuccess: false });
+  checkout: async (items, charge, customerName) => {
+    try {
+      set({ isLoading: true, isSuccess: false });
 
-            const response = await api.post(
-                ENDPOINTS.TRANSACTIONS.CHECKOUT,
-                {
-                    items,
-                    charge,
-                    customerName
-                }
-            );
+      const response = await api.post(ENDPOINTS.TRANSACTIONS.CHECKOUT, {
+        items,
+        charge,
+        customerName,
+      });
 
-            set({ isSuccess: true });
+      set({ isSuccess: true });
 
-            return response.data;
-        } catch (error) {
-            console.log("Checkout Error:", error);
-            throw error;
-        } finally {
-            set({ isLoading: false });
-        }
-    },
-
-    resetState: () => {
-        set({ isSuccess: false });
-    },
-    totalTransactionAndRevenue: async () => {
-        try {
-            set({ isLoading: true });
-            const response = await api.get(
-                `${ENDPOINTS.TRANSACTIONS.TOTAL}`
-            );
-            set({ totalRevenuePerDay: response.data.data.totalRevenue,totalTransactions:response.data.data.totalTransactions });
-        } catch (error) {
-            console.log("Fetch History Error:", error);
-        } finally {
-            set({ isLoading: false });
-        }
+      return response.data;
+    } catch (error) {
+      console.log("Checkout Error:", error);
+      throw error;
+    } finally {
+      set({ isLoading: false });
     }
+  },
+
+  resetState: () => {
+    set({ isSuccess: false });
+  },
+  totalTransactionAndRevenue: async () => {
+    try {
+      set({ isLoading: true });
+      const response = await api.get(`${ENDPOINTS.TRANSACTIONS.TOTAL}`);
+      set({
+        totalRevenuePerDay: response.data.data.totalRevenue,
+        totalTransactions: response.data.data.totalTransactions,
+      });
+    } catch (error) {
+      console.log("Fetch History Error:", error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  fetchDetailTransaction: async (id: string) => {
+    try {
+      set({ isLoading: true });
+      const response = await api.get(`${ENDPOINTS.TRANSACTIONS.DETAIL}/${id}`);
+      set({ detailTransaction: response.data.data });
+    } catch (error) {
+      console.log("Fetch History Error:", error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 }));

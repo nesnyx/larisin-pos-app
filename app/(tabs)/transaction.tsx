@@ -119,7 +119,7 @@ const TransactionPage = () => {
           onPress={() => setIsCartVisible(true)}
           className="bg-gray-100 p-3 rounded-2xl relative"
         >
-          <ShoppingBag size={24} color="#111827" />
+          <ShoppingBag size={24} />
           {totalItem > 0 && (
             <View className="absolute -top-1 -right-1 bg-lime-500 w-5 h-5 rounded-full items-center justify-center border-2 border-white">
               <Text className="text-[10px] text-white font-bold">
@@ -149,7 +149,7 @@ const TransactionPage = () => {
         )}
         ListEmptyComponent={() => (
           <View className="items-center justify-center mt-20">
-            <ShoppingBag size={32} color="#E5E7EB" />
+            <ShoppingBag size={32} />
             <Text className="text-gray-400 mt-4 font-semibold text-lg">
               Produk Kosong
             </Text>
@@ -167,7 +167,7 @@ const TransactionPage = () => {
             <Text className="text-white font-bold text-base">
               {totalItem} Item | Rp {totalPrice.toLocaleString()}
             </Text>
-            <ChevronRight size={20} color="white" />
+            <ChevronRight size={20} />
           </TouchableOpacity>
         </View>
       )}
@@ -181,7 +181,7 @@ const TransactionPage = () => {
                 Keranjang
               </Text>
               <TouchableOpacity onPress={() => setIsCartVisible(false)}>
-                <X size={24} color="#000" />
+                <X size={24} />
               </TouchableOpacity>
             </View>
             <ScrollView className="px-8">
@@ -201,7 +201,7 @@ const TransactionPage = () => {
                         onPress={() => updateQty(item.id, -1)}
                         className="bg-white p-2 rounded-xl"
                       >
-                        <Minus size={16} color="#374151" />
+                        <Minus size={16} />
                       </TouchableOpacity>
                       <Text className="mx-4 font-black text-gray-900">
                         {item.qty}
@@ -210,14 +210,14 @@ const TransactionPage = () => {
                         onPress={() => updateQty(item.id, 1)}
                         className="bg-gray-900 p-2 rounded-xl"
                       >
-                        <Plus size={16} color="#fff" />
+                        <Plus size={16} color="white" />
                       </TouchableOpacity>
                     </View>
                   </View>
                 ))
               ) : (
                 <View className="items-center justify-center mt-20">
-                  <ShoppingBag size={32} color="#E5E7EB" />
+                  <ShoppingBag size={32} />
                   <Text className="text-gray-400 mt-4 font-semibold text-lg">
                     Keranjang Kosong
                   </Text>
@@ -282,7 +282,7 @@ const TransactionPage = () => {
                 {/* Input Nama */}
                 <View>
                   <View className="flex-row items-center mb-2 ml-1">
-                    <User size={14} color="#9CA3AF" />
+                    <User size={14} />
                     <Text className="text-gray-500 font-bold text-[10px] uppercase ml-1">
                       Nama Customer
                     </Text>
@@ -298,7 +298,7 @@ const TransactionPage = () => {
                 {/* Input Uang Tunai */}
                 <View>
                   <View className="flex-row items-center mb-2 ml-1">
-                    <Wallet size={14} color="#9CA3AF" />
+                    <Wallet size={14} />
                     <Text className="text-gray-500 font-bold text-[10px] uppercase ml-1">
                       Uang Tunai (Cash)
                     </Text>

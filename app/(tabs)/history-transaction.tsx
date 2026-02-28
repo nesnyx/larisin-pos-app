@@ -1,30 +1,31 @@
 import { useTransactionStore } from "@/store/useTransaction";
 import * as FileSystem from "expo-file-system/legacy";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import * as Sharing from "expo-sharing";
 import {
-    ArrowUpRight,
-    Calendar,
-    ChevronRight,
-    FileDown,
-    ReceiptText,
-    Search,
+  ArrowUpRight,
+  Calendar,
+  ChevronRight,
+  FileDown,
+  ReceiptText,
+  Search,
 } from "lucide-react-native";
 import React, { useCallback, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as XLSX from "xlsx";
 
-type FilterType = "Hari Ini" | "Minggu Ini" | "Bulan Ini";
-const filterMap: Record<FilterType, "daily" | "weekly" | "monthly"> = {
+type FilterType = "Semua" | "Hari Ini" | "Minggu Ini" | "Bulan Ini";
+const filterMap: Record<FilterType, "" | "daily" | "weekly" | "monthly"> = {
+  Semua: "",
   "Hari Ini": "daily",
   "Minggu Ini": "weekly",
   "Bulan Ini": "monthly",
@@ -32,14 +33,13 @@ const filterMap: Record<FilterType, "daily" | "weekly" | "monthly"> = {
 const HistoryTransaction = () => {
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>("Hari Ini");
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>("Semua");
   const { histories, fetchHistories, isLoading } = useTransactionStore();
-
   useFocusEffect(
     useCallback(() => {
       const period = filterMap[selectedFilter];
       fetchHistories(period);
-      return () => {};
+      return () => { };
     }, [selectedFilter]),
   );
 
@@ -67,20 +67,18 @@ const HistoryTransaction = () => {
   const [isExporting, setIsExporting] = useState(false);
 
   const exportToExcel = async () => {
-    // 1. CEK DATA KOSONG
     if (!filteredHistory || filteredHistory.length === 0) {
       Alert.alert(
         "Data Kosong",
         "Tidak ada transaksi yang bisa diekspor untuk periode ini.",
         [{ text: "OK" }],
       );
-      return; // Stop fungsi di sini
+      return;
     }
 
     setIsExporting(true);
 
     try {
-      // 2. Mapping Data
       const dataToExport = filteredHistory.map((item) => ({
         "No Invoice": item.invoice || "-",
         Pelanggan: item.customerName || "Guest",
@@ -91,20 +89,15 @@ const HistoryTransaction = () => {
           : "-",
       }));
 
-      // 3. Proses Excel
       const ws = XLSX.utils.json_to_sheet(dataToExport);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Laporan Transaksi");
       const wbout = XLSX.write(wb, { type: "base64", bookType: "xlsx" });
-
       const fileName = `Laporan_Larisin_${Date.now()}`;
 
-      // 4. Proses Simpan (SAF)
       const SAF = FileSystem.StorageAccessFramework;
-
       if (SAF) {
         const permissions = await SAF.requestDirectoryPermissionsAsync();
-
         if (permissions.granted) {
           const fileUri = await SAF.createFileAsync(
             permissions.directoryUri,
@@ -131,7 +124,6 @@ const HistoryTransaction = () => {
     }
   };
   const processSharing = async (base64Data: string, name: string) => {
-    // cacheDirectory di sini udah kebaca lagi karena pake /legacy
     const tempUri = `${FileSystem.cacheDirectory}${name}.xlsx`;
 
     await FileSystem.writeAsStringAsync(tempUri, base64Data, {
@@ -159,12 +151,12 @@ const HistoryTransaction = () => {
             {isExporting ? (
               <ActivityIndicator size={20} color="#65A30D" />
             ) : (
-              <FileDown size={24} color="#65A30D" />
+              <FileDown size={24} />
             )}
           </TouchableOpacity>
 
           <TouchableOpacity className="bg-gray-100 p-3 rounded-2xl">
-            <Calendar size={24} color="#111827" />
+            <Calendar size={24} />
           </TouchableOpacity>
         </View>
       </View>
@@ -181,23 +173,21 @@ const HistoryTransaction = () => {
             </Text>
           </View>
           <View className="bg-white/20 p-3 rounded-2xl">
-            <ArrowUpRight size={28} color="white" />
+            <ArrowUpRight size={28} />
           </View>
         </View>
       </View>
       <View className="px-6 mb-4 flex-row justify-between">
-        {["Hari Ini", "Minggu Ini", "Bulan Ini"].map((item: any) => (
+        {["Semua", "Hari Ini", "Minggu Ini", "Bulan Ini"].map((item: any) => (
           <TouchableOpacity
             key={item}
             onPress={() => setSelectedFilter(item)}
-            className={`px-4 py-2 rounded-2xl ${
-              selectedFilter === item ? "bg-gray-900" : "bg-gray-100"
-            }`}
+            className={`px-4 py-2 rounded-2xl ${selectedFilter === item ? "bg-gray-900" : "bg-gray-100"
+              }`}
           >
             <Text
-              className={`font-bold text-xs ${
-                selectedFilter === item ? "text-white" : "text-gray-600"
-              }`}
+              className={`font-bold text-xs ${selectedFilter === item ? "text-white" : "text-gray-600"
+                }`}
             >
               {item}
             </Text>
@@ -207,7 +197,7 @@ const HistoryTransaction = () => {
       {/* Search Bar */}
       <View className="px-6 mb-4">
         <View className="flex-row items-center bg-gray-50 rounded-2xl px-4 py-3 border border-gray-100">
-          <Search size={20} color="#9CA3AF" />
+          <Search size={20} />
           <TextInput
             placeholder="Cari Nama atau Invoice..."
             className="flex-1 ml-3 font-medium text-gray-700"
@@ -249,9 +239,17 @@ const HistoryTransaction = () => {
             <TouchableOpacity
               activeOpacity={0.7}
               className="bg-white border border-gray-100 p-5 rounded-[28px] mb-4 flex-row items-center shadow-sm"
+              onPress={() => {
+                router.push({
+                  pathname: "/history-transaction-detail",
+                  params: {
+                    id: item.id
+                  }
+                });
+              }}
             >
               <View className="bg-gray-50 p-4 rounded-2xl mr-4">
-                <ReceiptText size={24} color="#374151" />
+                <ReceiptText size={24} />
               </View>
 
               <View className="flex-1">
@@ -276,7 +274,7 @@ const HistoryTransaction = () => {
                   <Text className="text-gray-400 text-xs font-medium">
                     {item?.amount ?? 0} Produk • {time}
                   </Text>
-                  <ChevronRight size={16} color="#9CA3AF" />
+                  <ChevronRight size={16} />
                 </View>
               </View>
             </TouchableOpacity>

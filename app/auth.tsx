@@ -5,22 +5,22 @@ import api from "@/utils/api";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import {
-    ArrowRight,
-    Eye,
-    EyeOff,
-    Lock,
-    Mail,
-    ShieldCheck,
-    User,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  ShieldCheck,
+  User,
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -122,7 +122,7 @@ const AuthPage = () => {
           style={{ paddingTop: insets.top + 40 }}
         >
           <View className="bg-white w-16 h-16 rounded-2xl items-center justify-center mb-6 shadow-sm">
-            <ShieldCheck size={32} color="#111827" />
+            <ShieldCheck size={32}  />
           </View>
           <Text className="text-white text-4xl font-black italic">
             {isLogin ? "Selamat\nDatang Kembali" : "Buat Akun\nBaru Anda"}
@@ -135,7 +135,7 @@ const AuthPage = () => {
             {!isLogin && (
               <InputField
                 label="Nama Lengkap"
-                icon={<User size={18} color="#9CA3AF" />}
+                icon={<User size={18} />}
                 placeholder="Tulis namamu..."
                 value={formData.name}
                 onChangeText={(txt: any) =>
@@ -146,7 +146,7 @@ const AuthPage = () => {
 
             <InputField
               label="Email Address"
-              icon={<Mail size={18} color="#9CA3AF" />}
+              icon={<Mail size={18}  />}
               placeholder="Masukan Email"
               keyboardType="email-address"
               value={formData.email}
@@ -157,7 +157,7 @@ const AuthPage = () => {
 
             <InputField
               label="Password"
-              icon={<Lock size={18} color="#9CA3AF" />}
+              icon={<Lock size={18} />}
               placeholder="Masukan Password"
               secureTextEntry={secureText}
               value={formData.password}
@@ -167,9 +167,9 @@ const AuthPage = () => {
               rightIcon={
                 <TouchableOpacity onPress={() => setSecureText(!secureText)}>
                   {secureText ? (
-                    <Eye size={18} color="#9CA3AF" />
+                    <Eye size={18}  />
                   ) : (
-                    <EyeOff size={18} color="#9CA3AF" />
+                    <EyeOff size={18} />
                   )}
                 </TouchableOpacity>
               }
@@ -178,7 +178,7 @@ const AuthPage = () => {
             {!isLogin && (
               <InputField
                 label="Konfirmasi Password"
-                icon={<Lock size={18} color="#9CA3AF" />}
+                icon={<Lock size={18} />}
                 placeholder="••••••••"
                 secureTextEntry={secureText}
                 value={formData.confirmPassword}
@@ -196,13 +196,13 @@ const AuthPage = () => {
             className={`bg-gray-900 h-16 rounded-2xl flex-row items-center justify-center mt-10 ${loading ? "opacity-70" : ""}`}
           >
             {loading ? (
-              <ActivityIndicator color="white" />
+              <ActivityIndicator  />
             ) : (
               <>
                 <Text className="text-white font-black text-lg mr-2">
                   {isLogin ? "Masuk" : "Daftar Sekarang"}
                 </Text>
-                <ArrowRight size={20} color="white" />
+                <ArrowRight size={20}  />
               </>
             )}
           </TouchableOpacity>

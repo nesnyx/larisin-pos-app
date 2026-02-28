@@ -10,9 +10,13 @@ export const ENDPOINTS = {
         REGISTER: "/auth/register",
         PROFILE: "/auth/profile",
     },
-    TRANSACTIONS:{
+    TRANSACTIONS: {
         LIST: "/transactions",
         CHECKOUT: "/transactions",
-        TOTAL : "/transactions/revenue/summary"
+        TOTAL: "/transactions/revenue/summary",
+        DETAIL: (id : string) =>"/transactions/"+id
+    },
+    USER: {
+        UPDATE_PROFILE: "/user/profile"
     }
 }
